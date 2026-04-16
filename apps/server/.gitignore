@@ -1,0 +1,47 @@
+# .gitignore for a typical Node.js app
+
+# dependencies
+/node_modules
+
+# debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# dotenv environment variables
+.env
+.env.*        # Ignore all env files except example
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# editor directories and files
+.vscode/
+.idea/
+*.swp
+
+# build output
+/dist
+/build
+
+# misc
+*.pem
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Ignore logs
+logs
+*.log
+
+# Optional: ignore cache, test coverage, and output
+.cache/
+coverage/
+
+# Optional: Ignore Prisma generated code (if applicable)
+prisma/generated/
+# End of Selection
+```

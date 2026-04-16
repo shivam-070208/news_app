@@ -14,13 +14,68 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
+  id            String            @id @default(cuid())
+  email         String            @unique
   name          String?
-  role          Role      @default(READER)
+  role          Role              @default(READER)
   preferences   UserPreference?
   comments      Comment[]
-  createdAt     DateTime  @default(now())
+  emailVerified Boolean           @default(false)
+  image         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
 
 
@@ -29,12 +84,16 @@ model Category {
   name      String
   slug      String     @unique
   articles  Article[]
+
+  @@map("category")
 }
 
 model Tag {
   id       String       @id @default(cuid())
   name     String       @unique
   articles ArticleTag[]
+
+  @@map("tag")
 }
 
 model Article {
@@ -57,6 +116,8 @@ model Article {
   publishedAt      DateTime?
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
+
+  @@map("article")
 }
 
 enum ArticleStatus {
@@ -71,6 +132,8 @@ model ArticleTag {
   article   Article @relation(fields: [articleId], references: [id])
   tag       Tag     @relation(fields: [tagId], references: [id])
   @@id([articleId, tagId])
+
+  @@map("articletag")
 }
 
 model ArticleView {
@@ -82,6 +145,7 @@ model ArticleView {
   viewedAt  DateTime @default(now())
 
   @@index([articleId])
+  @@map("articleview")
 }
 
 model Comment {
@@ -97,6 +161,8 @@ model Comment {
   status          CommentStatus @default(PENDING)
   isDeleted       Boolean   @default(false)
   createdAt       DateTime  @default(now())
+
+  @@map("comment")
 }
 
 enum CommentStatus {
@@ -112,4 +178,6 @@ model UserPreference {
   categoryIds String[] 
   tagIds      String[]
   updatedAt   DateTime @updatedAt
+
+  @@map("userpreference")
 }
