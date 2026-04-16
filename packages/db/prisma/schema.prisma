@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  READER
+  ADMIN
+  EDITOR
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          Role      @default(READER)
+  preferences   UserPreference?
+  comments      Comment[]
+  createdAt     DateTime  @default(now())
+}
+
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String
+  slug      String     @unique
+  articles  Article[]
+}
+
+model Tag {
+  id       String       @id @default(cuid())
+  name     String       @unique
+  articles ArticleTag[]
+}
+
+model Article {
+  id               String       @id @default(cuid())
+  title            String
+  slug             String       @unique
+  summary          String
+  fullContent      String       @db.Text
+  thumbnailUrl     String?
+  authorId         String
+  categoryId       String
+  category         Category     @relation(fields: [categoryId], references: [id])
+  tags             ArticleTag[]
+  status           ArticleStatus @default(DRAFT)
+  isBreaking       Boolean      @default(false)
+  breakingExpiresAt DateTime?
+  viewCount        Int          @default(0) 
+  comments         Comment[]
+  views            ArticleView[]
+  publishedAt      DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model ArticleTag {
+  articleId String
+  tagId     String
+  article   Article @relation(fields: [articleId], references: [id])
+  tag       Tag     @relation(fields: [tagId], references: [id])
+  @@id([articleId, tagId])
+}
+
+model ArticleView {
+  id        String   @id @default(cuid())
+  articleId String
+  article   Article  @relation(fields: [articleId], references: [id])
+  userId    String?  
+  ipHash    String   
+  viewedAt  DateTime @default(now())
+
+  @@index([articleId])
+}
+
+model Comment {
+  id              String    @id @default(cuid())
+  articleId       String
+  article         Article   @relation(fields: [articleId], references: [id])
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  body            String
+  parentCommentId String?  
+  parent          Comment?  @relation("Replies", fields: [parentCommentId], references: [id])
+  replies         Comment[] @relation("Replies")
+  status          CommentStatus @default(PENDING)
+  isDeleted       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  FLAGGED
+}
+
+model UserPreference {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  categoryIds String[] 
+  tagIds      String[]
+  updatedAt   DateTime @updatedAt
+}

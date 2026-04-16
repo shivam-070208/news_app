@@ -19,6 +19,24 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "db:migrate": {
+      "dependsOn": [],
+      "inputs": ["prisma/migrations/**", "prisma/schema.prisma"],
+      "outputs": [],
+      "cache": false
+    },
+    "db:generate": {
+      "dependsOn": [],
+      "inputs": ["prisma/schema.prisma"],
+      "outputs": ["./src/generated/prisma/**"],
+      "cache": false
+    },
+    "db:deploy": {
+      "dependsOn": ["prisma:migrate", "prisma:generate"],
+      "inputs": ["prisma/migrations/**", "prisma/schema.prisma"],
+      "outputs": ["./src/generated/prisma/**"],
+      "cache": false
     }
   }
 }
