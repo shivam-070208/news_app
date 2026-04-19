@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const url = new URL("/api/v1/auth/session", backendOrigin)
+  const url = new URL("/api/auth/get-session", backendOrigin)
   const response = await fetch(url.toString(), {
     method: "GET",
     headers: {
