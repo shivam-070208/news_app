@@ -22,20 +22,24 @@ function normalizeRole(role?: string) {
 }
 
 async function getSession(request: NextRequest) {
-  const url = new URL("/api/session", request.nextUrl.origin)
-  const response = await fetch(url.toString(), {
-    headers: {
-      cookie: request.headers.get("cookie") ?? "",
-    },
-    credentials: "include",
-    cache: "no-store",
-  })
+  try {
+    const url = new URL("/api/session", request.nextUrl.origin)
+    const response = await fetch(url.toString(), {
+      headers: {
+        cookie: request.headers.get("cookie") ?? "",
+      },
+      credentials: "include",
+      cache: "no-store",
+    })
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return null
+    }
+
+    return response.json().catch(() => null)
+  } catch {
     return null
   }
-
-  return response.json().catch(() => null)
 }
 
 export async function middleware(request: NextRequest) {
