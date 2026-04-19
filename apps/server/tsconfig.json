@@ -5,7 +5,8 @@
     "outDir": "./dist",
     "paths": {
       "@/*": ["./src/*"],
-      "@types/*": ["./src/types/*"]
+      "@types/*": ["./src/types/*"],
+      "@v1/*": ["./src/api/v1/*"]
     }
   },
   "include": ["src/**/*.ts"],

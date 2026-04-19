@@ -40,7 +40,6 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([token])
   @@index([userId])
   @@map("session")
