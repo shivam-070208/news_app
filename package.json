@@ -5,15 +5,19 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "lint": "turbo lint",
+    "lint": "turbo lint --filter='!@workspace/db'",
     "format": "turbo format",
     "typecheck": "turbo typecheck",
-    "prepare": "husky",
-    "lint:stage": "lint-staged"
+    "prepare": "husky install",
+    "lint:stage": "lint-staged",
+    "db:generate": "turbo run db:generate",
+    "db:migrate": "turbo run db:migrate",
+    "db:deploy": "turbo run db:deploy"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "eslint": "^9",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",

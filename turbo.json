@@ -5,6 +5,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": ["ALLOWED_ORIGINS", "PORT"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {
@@ -19,6 +20,24 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "db:migrate": {
+      "dependsOn": [],
+      "inputs": ["prisma/migrations/**", "prisma/schema.prisma"],
+      "outputs": [],
+      "cache": false
+    },
+    "db:generate": {
+      "dependsOn": [],
+      "inputs": ["prisma/schema.prisma"],
+      "outputs": ["./src/generated/prisma/**"],
+      "cache": false
+    },
+    "db:deploy": {
+      "dependsOn": ["prisma:migrate", "prisma:generate"],
+      "inputs": ["prisma/migrations/**", "prisma/schema.prisma"],
+      "outputs": ["./src/generated/prisma/**"],
+      "cache": false
     }
   }
 }
