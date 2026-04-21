@@ -8,7 +8,7 @@
     "lint": "turbo lint",
     "format": "turbo format",
     "typecheck": "turbo typecheck",
-    "prepare": "husky install",
+    "prepare": "husky",
     "lint:stage": "lint-staged"
   },
   "devDependencies": {
@@ -24,7 +24,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "prettier --write",
-      "turbo lint --cache --filter"
+      "eslint --fix"
     ],
     "*.{json,md,css,scss,html,yml,yaml}": [
       "prettier --write"
