@@ -38,12 +38,54 @@ importers:
 
   apps/admin:
     dependencies:
+      '@editorjs/attaches':
+        specifier: ^1.3.2
+        version: 1.3.2
+      '@editorjs/checklist':
+        specifier: ^1.6.0
+        version: 1.6.0
+      '@editorjs/editorjs':
+        specifier: ^2.31.6
+        version: 2.31.6
+      '@editorjs/header':
+        specifier: ^2.8.8
+        version: 2.8.8
+      '@editorjs/image':
+        specifier: ^2.10.3
+        version: 2.10.3
+      '@editorjs/inline-code':
+        specifier: ^1.5.2
+        version: 1.5.2
+      '@editorjs/link':
+        specifier: ^2.6.2
+        version: 2.6.2
+      '@editorjs/list':
+        specifier: ^2.0.9
+        version: 2.0.9
+      '@editorjs/marker':
+        specifier: ^1.4.0
+        version: 1.4.0
+      '@editorjs/paragraph':
+        specifier: ^2.11.7
+        version: 2.11.7
+      '@editorjs/quote':
+        specifier: ^2.7.6
+        version: 2.7.6
+      '@editorjs/table':
+        specifier: ^2.4.5
+        version: 2.4.5
+      '@editorjs/underline':
+        specifier: ^1.2.1
+        version: 1.2.1
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       better-auth:
         specifier: ^1.4.15
         version: 1.6.5(@opentelemetry/api@1.9.1)(@prisma/client@7.7.0(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3))(mysql2@3.15.3)(next@16.2.3(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(pg@8.20.0)(prisma@7.7.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      cloudinary:
+        specifier: ^2.9.0
+        version: 2.9.0
       next:
         specifier: 16.2.3
         version: 16.2.3(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -58,7 +100,7 @@ importers:
         version: 19.2.4(react@19.2.4)
     devDependencies:
       '@tailwindcss/postcss':
-        specifier: ^4
+        specifier: ^4.1.18
         version: 4.1.18
       '@types/node':
         specifier: ^20
@@ -81,9 +123,12 @@ importers:
       eslint-config-next:
         specifier: 16.2.3
         version: 16.2.3(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+      postcss:
+        specifier: ^8.5.10
+        version: 8.5.10
       tailwindcss:
-        specifier: ^4
-        version: 4.1.18
+        specifier: ^4.2.2
+        version: 4.2.2
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -431,6 +476,10 @@ packages:
     resolution: {integrity: sha512-FVFaVs2/dZgD3Y9ZD+AKNKjyGKzwu0C54laAXWUXgLcVXcCX6YZ6GhK2cp7FogSN2OA0Fu+QT8dP3FUdo9ShSQ==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/runtime@7.29.2':
+    resolution: {integrity: sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/template@7.28.6':
     resolution: {integrity: sha512-YA6Ma2KsCdGb+WC6UpBVFJGXL58MDA6oyONbjyF/+5sBgxY/dwkhLogbMT2GXXyU84/IhRw/2D1Os1B/giz+BQ==}
     engines: {node: '>=6.9.0'}
@@ -519,6 +568,20 @@ packages:
 
   '@better-fetch/fetch@1.1.21':
     resolution: {integrity: sha512-/ImESw0sskqlVR94jB+5+Pxjf+xBwDZF/N5+y2/q4EqD7IARUTSpPfIo8uf39SYpCxyOCtbyYpUrZ3F/k0zT4A==}
+  '@codexteam/ajax@4.2.0':
+    resolution: {integrity: sha512-54r/HZirqBPEV8rM9gZh570RCwG6M/iDAXT9Q9eGuMo9KZU49tw1dEDHjYsResGckfCsaymDqg4GnhfrBtX9JQ==}
+
+  '@codexteam/icons@0.0.4':
+    resolution: {integrity: sha512-V8N/TY2TGyas4wLrPIFq7bcow68b3gu8DfDt1+rrHPtXxcexadKauRJL6eQgfG7Z0LCrN4boLRawR4S9gjIh/Q==}
+
+  '@codexteam/icons@0.0.5':
+    resolution: {integrity: sha512-s6H2KXhLz2rgbMZSkRm8dsMJvyUNZsEjxobBEg9ztdrb1B2H3pEzY6iTwI4XUPJWJ3c3qRKwV4TrO3J5jUdoQA==}
+
+  '@codexteam/icons@0.0.6':
+    resolution: {integrity: sha512-L7Q5PET8PjKcBT5wp7VR+FCjwCi5PUp7rd/XjsgQ0CI5FJz0DphyHGRILMuDUdCW2MQT9NHbVr4QP31vwAkS/A==}
+
+  '@codexteam/icons@0.3.3':
+    resolution: {integrity: sha512-cp7mkZPgmBuSxigTm3Vb+DtVHYeX7qXfQd7o05vcLD8Ag5WvRlol2QSn5P10k0CDAJwmkH9nQGQLBycErS9lsQ==}
 
   '@dotenvx/dotenvx@1.61.0':
     resolution: {integrity: sha512-utL3cpZoFzflyqUkjYbxYujI6STBTmO5LFn4bbin/NZnRWN6wQ7eErhr3/Vpa5h/jicPFC6kTa42r940mQftJQ==}
@@ -543,6 +606,60 @@ packages:
 
   '@electric-sql/pglite@0.4.1':
     resolution: {integrity: sha512-mZ9NzzUSYPOCnxHH1oAHPRzoMFJHY472raDKwXl/+6oPbpdJ7g8LsCN4FSaIIfkiCKHhb3iF/Zqo3NYxaIhU7Q==}
+  '@editorjs/attaches@1.3.2':
+    resolution: {integrity: sha512-hzwcOo/Lk1hTEzXXV0MSnwPsGIILaeM1R7SCMu4uUALftlQVugf+Vm4a9Rd66IT7TU3tfyiOwJPb/Ydp9zn36A==}
+    engines: {node: '>=20.0.0'}
+
+  '@editorjs/caret@1.1.0':
+    resolution: {integrity: sha512-dzUjrPV7mtqM0HR/7IwT1/1PfyMxUfe5MRXo9joFmBRDIcrQ5ikbqVxSL9+Hy5tQ+BUWBwqLUgX1UKTJylWW9Q==}
+
+  '@editorjs/checklist@1.6.0':
+    resolution: {integrity: sha512-hRNP36DInr73mSK3noHBQeoQb7DA12ANfqTXufEkTgQzx+k4mRJ0HdeGukTIR4JbwjHJ9ecUBnnQqIEGnxCFEg==}
+
+  '@editorjs/dom@0.0.5':
+    resolution: {integrity: sha512-SZ78Gwpkp3EUhjBIp0lSojeQ35V9acF8SubJsMeOH/vlOUE40GOnvvwWZnF05lO7bIB0dOHhhJy4N7IIAWxP2w==}
+
+  '@editorjs/dom@1.1.0':
+    resolution: {integrity: sha512-aH8OeS3DXCDG2WP6yt/uS6Z9PstrA3Re930boIilxtMdF7Ht+pKJrq3OJnd7OCMPVO/y7UOAmtHNesVx6v4K2g==}
+
+  '@editorjs/editorjs@2.31.6':
+    resolution: {integrity: sha512-j2nxuFCD3DnoJDUD0hPO5tirpuQ6sWmmuHATl3EI7fG1it3Ml7jk0WJtu3E+TRLBd7zfNeJhDThbP3LnBEn2GA==}
+
+  '@editorjs/header@2.8.8':
+    resolution: {integrity: sha512-bsMSs34u2hoi0UBuRoc5EGWXIFzJiwYgkFUYQGVm63y5FU+s8zPBmVx5Ip2sw1xgs0fqfDROqmteMvvmbCy62w==}
+
+  '@editorjs/helpers@0.0.4':
+    resolution: {integrity: sha512-ieg3dzo2m1/ELze/RMNADiAiC5amXxIlVXoJ5vvXITOu/p/dPsrF+Oi3h5gBYvtGk9vg5LJUSG5YWU0tBUO1tw==}
+
+  '@editorjs/helpers@1.2.0':
+    resolution: {integrity: sha512-u/hQDaiTAqxjYMOHWFMLwVhLEiVysFrtehcVN2npbeQPGSMOzZ5tOSeH1qBfSgkUUx+qU5wydvokaaXhTS8Jdg==}
+
+  '@editorjs/image@2.10.3':
+    resolution: {integrity: sha512-ekCsGICZOIdghF/U2T34H7CItqaWAoJDXbkRD+x8l/LIo/7Ozf7KovYm21qz+CluArgV4RurVFHqwlz+O0vfJA==}
+
+  '@editorjs/inline-code@1.5.2':
+    resolution: {integrity: sha512-IpEvwMTP3q89T/6vTi3ACoSMOcTdywtMsci1w19+Z/lxQn/NVuVah++ro93wQ/1ZVTyCr+TPUCchxwzY1/xaMg==}
+
+  '@editorjs/link@2.6.2':
+    resolution: {integrity: sha512-3cPx6M4ZvwDDvsi0E0fvMR3rvveAV/C0GRo1JLeZJ9cG9QgyoNolj4eu5Eqx3/r1XTC/he54qYEIZ/Dc4Lr4Ow==}
+
+  '@editorjs/list@2.0.9':
+    resolution: {integrity: sha512-rUTgDSt5wygD3Dp24bNyp6vvye/Xf4UWju0ZuvWeP13Z4cu2z1Jb5JFSTEhCou72XUGuf4xVhtsd8cm/bwUS1g==}
+
+  '@editorjs/marker@1.4.0':
+    resolution: {integrity: sha512-5ipEXfL44jTTRzgNp/p/YjMO7jT08S5z4V8qA3FFJTfdhKgQyM3mvP1zpdYKw47ZZpVWMCncvk5Nto3BxihEtg==}
+
+  '@editorjs/paragraph@2.11.7':
+    resolution: {integrity: sha512-qD6bbWvRc4VvP0mXDOm+hOhzzhUYR9ZjcAvgCuKWcCbUMpCvhVF1s8NX40zdjekPi6JEnuHTamCncTrSzVsVhw==}
+
+  '@editorjs/quote@2.7.6':
+    resolution: {integrity: sha512-D01KUMSDj2r+6Z+xjDkQqI+y6URpeHCvj0+P4pah+GtkG040lWjFb2H4pgHFXuol2cbfyAoraYSw85fuPheCvw==}
+
+  '@editorjs/table@2.4.5':
+    resolution: {integrity: sha512-pF48R2wc5m0c+N+RjtCLXBGZd23Rl7EjfSFpmcSViwNsu5RwMgYGrEiQ8mzVh98mbvYQwXm/NYBi9DEUUs970A==}
+
+  '@editorjs/underline@1.2.1':
+    resolution: {integrity: sha512-LjJ01ia6Pj0Z/elifycp9+T1bQs0eXNnIcEYKOlk0sGHLy88DPcBOh9oz1i+uWarZ4AjGsvSMaptpWe+yQNsjQ==}
 
   '@emnapi/core@1.9.2':
     resolution: {integrity: sha512-UC+ZhH3XtczQYfOlu3lNEkdW/p4dsJ1r/bP7H8+rhao3TTTMO1ATq/4DdIi23XuGoFY+Cz0JmCbdVl0hz9jZcA==}
@@ -2520,6 +2637,7 @@ packages:
   basic-ftp@5.0.5:
     resolution: {integrity: sha512-4Bcg1P8xhUuqcii/S0Z9wiHIrQVPMermM1any+MX5GeGD7faD3/msQUDGLol9wOcz4/jbg/WJnGqoJF6LiBdtg==}
     engines: {node: '>=10.0.0'}
+    deprecated: Security vulnerability fixed in 5.2.1, please upgrade
 
   better-auth@1.6.5:
     resolution: {integrity: sha512-rSt8JtJOJK0MqPShXINCmM6DV30GsDvnCTlIxQIzP9OpUx/umA40nUc4ALZHQyqAPbw1ib/a549kIWw/WyxxKA==}
@@ -2739,12 +2857,22 @@ packages:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
 
+  cloudinary@2.9.0:
+    resolution: {integrity: sha512-F3iKMOy4y0zy0bi5JBp94SC7HY7i/ImfTPSUV07iJmRzH1Iz8WavFfOlJTR1zvYM/xKGoiGZ3my/zy64In0IQQ==}
+    engines: {node: '>=9'}
+
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
 
   code-block-writer@13.0.3:
     resolution: {integrity: sha512-Oofo0pq3IKnsFtuHqSF7TqBfr71aeyZDVJ0HpmqB7FBM2qEigL0iPONSCZSO9pE9dZTAxANe5XHG9Uy0YMv8cg==}
+
+  codex-notifier@1.1.2:
+    resolution: {integrity: sha512-DCp6xe/LGueJ1N5sXEwcBc3r3PyVkEEDNWCVigfvywAkeXcZMk9K41a31tkEFBW0Ptlwji6/JlAb49E3Yrxbtg==}
+
+  codex-tooltip@1.0.5:
+    resolution: {integrity: sha512-IuA8LeyLU5p1B+HyhOsqR6oxyFQ11k3i9e9aXw40CrHFTRO2Y1npNBVU3W1SvhKAbUU7R/YikUBdcYFP0RcJag==}
 
   color-convert@1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}
@@ -4502,6 +4630,10 @@ packages:
     resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postcss@8.5.10:
+    resolution: {integrity: sha512-pMMHxBOZKFU6HgAZ4eyGnwXF/EvPGGqUr0MnZ5+99485wwW41kW91A4LOGxSHhgugZmSChL5AlElNdwlNgcnLQ==}
+    engines: {node: ^10 || ^12 || >=14}
+
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
@@ -5112,6 +5244,9 @@ packages:
   tailwindcss@4.1.18:
     resolution: {integrity: sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==}
 
+  tailwindcss@4.2.2:
+    resolution: {integrity: sha512-KWBIxs1Xb6NoLdMVqhbhgwZf2PGBpPEiwOqgI4pFIYbNTfBXiKYyWoTsXgBQ9WFg/OlhnvHaY+AEpW7wSmFo2Q==}
+
   tapable@2.3.0:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
@@ -5634,6 +5769,8 @@ snapshots:
     dependencies:
       core-js-pure: 3.45.0
 
+  '@babel/runtime@7.29.2': {}
+
   '@babel/template@7.28.6':
     dependencies:
       '@babel/code-frame': 7.29.0
@@ -5719,6 +5856,15 @@ snapshots:
       '@noble/hashes': 2.2.0
 
   '@better-fetch/fetch@1.1.21': {}
+  '@codexteam/ajax@4.2.0': {}
+
+  '@codexteam/icons@0.0.4': {}
+
+  '@codexteam/icons@0.0.5': {}
+
+  '@codexteam/icons@0.0.6': {}
+
+  '@codexteam/icons@0.3.3': {}
 
   '@dotenvx/dotenvx@1.61.0':
     dependencies:
@@ -5746,6 +5892,81 @@ snapshots:
       '@electric-sql/pglite': 0.4.1
 
   '@electric-sql/pglite@0.4.1': {}
+  '@editorjs/attaches@1.3.2':
+    dependencies:
+      '@codexteam/ajax': 4.2.0
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/caret@1.1.0':
+    dependencies:
+      '@editorjs/dom': 1.1.0
+
+  '@editorjs/checklist@1.6.0':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/dom@0.0.5':
+    dependencies:
+      '@editorjs/helpers': 0.0.4
+
+  '@editorjs/dom@1.1.0':
+    dependencies:
+      '@editorjs/helpers': 1.2.0
+
+  '@editorjs/editorjs@2.31.6':
+    dependencies:
+      '@editorjs/caret': 1.1.0
+      codex-notifier: 1.1.2
+      codex-tooltip: 1.0.5
+
+  '@editorjs/header@2.8.8':
+    dependencies:
+      '@codexteam/icons': 0.0.5
+      '@editorjs/editorjs': 2.31.6
+
+  '@editorjs/helpers@0.0.4': {}
+
+  '@editorjs/helpers@1.2.0':
+    dependencies:
+      codex-tooltip: 1.0.5
+
+  '@editorjs/image@2.10.3':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/inline-code@1.5.2':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/link@2.6.2':
+    dependencies:
+      '@babel/runtime': 7.29.2
+      '@codexteam/icons': 0.0.4
+
+  '@editorjs/list@2.0.9':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/marker@1.4.0':
+    dependencies:
+      '@codexteam/icons': 0.0.5
+
+  '@editorjs/paragraph@2.11.7':
+    dependencies:
+      '@codexteam/icons': 0.0.4
+
+  '@editorjs/quote@2.7.6':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+      '@editorjs/dom': 0.0.5
+
+  '@editorjs/table@2.4.5':
+    dependencies:
+      '@codexteam/icons': 0.0.6
+
+  '@editorjs/underline@1.2.1':
+    dependencies:
+      '@codexteam/icons': 0.3.3
 
   '@emnapi/core@1.9.2':
     dependencies:
@@ -7243,7 +7464,7 @@ snapshots:
       '@alloc/quick-lru': 5.2.0
       '@tailwindcss/node': 4.1.18
       '@tailwindcss/oxide': 4.1.18
-      postcss: 8.5.6
+      postcss: 8.5.10
       tailwindcss: 4.1.18
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
@@ -7981,9 +8202,17 @@ snapshots:
 
   clone@1.0.4: {}
 
+  cloudinary@2.9.0:
+    dependencies:
+      lodash: 4.17.21
+
   clsx@2.1.1: {}
 
   code-block-writer@13.0.3: {}
+
+  codex-notifier@1.1.2: {}
+
+  codex-tooltip@1.0.5: {}
 
   color-convert@1.9.3:
     dependencies:
@@ -9897,6 +10126,12 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  postcss@8.5.10:
+    dependencies:
+      nanoid: 3.3.11
+      picocolors: 1.1.1
+      source-map-js: 1.2.1
+
   postcss@8.5.6:
     dependencies:
       nanoid: 3.3.11
@@ -10629,6 +10864,8 @@ snapshots:
   tailwind-merge@3.5.0: {}
 
   tailwindcss@4.1.18: {}
+
+  tailwindcss@4.2.2: {}
 
   tapable@2.3.0: {}
 
