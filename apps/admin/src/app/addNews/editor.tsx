@@ -53,6 +53,7 @@ function Divider() {
 // ─── Main component ───────────────────────────────────────────────
 export default function Editor() {
   const editorRef = useRef<EditorJS | null>(null)
+  const isReadyRef = useRef<boolean>(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const holderRef = useRef<HTMLDivElement>(null)
@@ -78,6 +79,10 @@ export default function Editor() {
 
     editorRef.current = new EditorJS({
       holder: "editorjs-holder",
+
+      onReady: () => {
+        isReadyRef.current = true
+      },
 
       placeholder:
         "Start writing your story here... Use the toolbar above or click here to begin.",
@@ -140,8 +145,8 @@ export default function Editor() {
     return () => {
       if (editorRef.current?.destroy) {
         editorRef.current.destroy()
-        editorRef.current = null
         isReadyRef.current = false
+        editorRef.current = null
       }
     }
   }, [])
@@ -166,11 +171,47 @@ export default function Editor() {
   const togglePanel = (p: ActivePanel) =>
     setPanel((prev) => (prev === p ? null : p))
 
+  const getValidatedUrl = (url: string, isImage = false): string | null => {
+    let cleanUrl = url.trim()
+    if (!cleanUrl) return null
+
+    // Prepend https:// if it lacks a scheme and isn't a relative/anchor path
+    if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(cleanUrl) && !cleanUrl.startsWith("/") && !cleanUrl.startsWith("#")) {
+      cleanUrl = `https://${cleanUrl}`
+    }
+
+    try {
+      const parsedUrl = new URL(cleanUrl, "http://localhost")
+      const allowedSchemes = isImage ? ["http:", "https:", "data:"] : ["http:", "https:", "mailto:"]
+
+      if (!allowedSchemes.includes(parsedUrl.protocol)) {
+        return null
+      }
+
+      if (isImage && parsedUrl.protocol === "data:") {
+        if (!cleanUrl.startsWith("data:image/")) return null
+      }
+
+      if (parsedUrl.origin === "http://localhost" && !cleanUrl.startsWith("http://localhost")) {
+        return cleanUrl
+      }
+
+      return cleanUrl
+    } catch {
+      return null
+    }
+  }
+
   const handleLinkInsert = () => {
-    if (!linkUrl.trim()) return
+    const validUrl = getValidatedUrl(linkUrl)
+    if (!validUrl) {
+      alert("Invalid or dangerous URL.")
+      return
+    }
+
     refocusEditor()
     requestAnimationFrame(() => {
-      document.execCommand("createLink", false, linkUrl.trim())
+      document.execCommand("createLink", false, validUrl)
       setLinkUrl("")
       setPanel(null)
     })
@@ -210,9 +251,14 @@ export default function Editor() {
 
   // ── Image from URL ─────────────────────────────────────────────
   const handleImageUrlInsert = () => {
-    if (!imageUrl.trim()) return
+    const validUrl = getValidatedUrl(imageUrl, true)
+    if (!validUrl) {
+      alert("Invalid or dangerous Image URL.")
+      return
+    }
+
     insertBlock("image", {
-      file: { url: imageUrl.trim() },
+      file: { url: validUrl },
       caption: "",
       withBorder: false,
       withBackground: false,
@@ -429,7 +475,7 @@ export default function Editor() {
           <TBtn
             title="Insert Image"
             active={panel === "image-url" || panel === "image-file"}
-            onClick={() => togglePanel("image-url")}
+            onClick={() => togglePanel(panel === "image-url" || panel === "image-file" ? null : "image-url")}
           >
             <svg
               width="15"
