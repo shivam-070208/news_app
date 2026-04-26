@@ -176,13 +176,19 @@ export default function Editor() {
     if (!cleanUrl) return null
 
     // Prepend https:// if it lacks a scheme and isn't a relative/anchor path
-    if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(cleanUrl) && !cleanUrl.startsWith("/") && !cleanUrl.startsWith("#")) {
+    if (
+      !/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(cleanUrl) &&
+      !cleanUrl.startsWith("/") &&
+      !cleanUrl.startsWith("#")
+    ) {
       cleanUrl = `https://${cleanUrl}`
     }
 
     try {
       const parsedUrl = new URL(cleanUrl, "http://localhost")
-      const allowedSchemes = isImage ? ["http:", "https:", "data:"] : ["http:", "https:", "mailto:"]
+      const allowedSchemes = isImage
+        ? ["http:", "https:", "data:"]
+        : ["http:", "https:", "mailto:"]
 
       if (!allowedSchemes.includes(parsedUrl.protocol)) {
         return null
@@ -192,7 +198,10 @@ export default function Editor() {
         if (!cleanUrl.startsWith("data:image/")) return null
       }
 
-      if (parsedUrl.origin === "http://localhost" && !cleanUrl.startsWith("http://localhost")) {
+      if (
+        parsedUrl.origin === "http://localhost" &&
+        !cleanUrl.startsWith("http://localhost")
+      ) {
         return cleanUrl
       }
 
@@ -475,7 +484,13 @@ export default function Editor() {
           <TBtn
             title="Insert Image"
             active={panel === "image-url" || panel === "image-file"}
-            onClick={() => togglePanel(panel === "image-url" || panel === "image-file" ? null : "image-url")}
+            onClick={() =>
+              togglePanel(
+                panel === "image-url" || panel === "image-file"
+                  ? null
+                  : "image-url"
+              )
+            }
           >
             <svg
               width="15"
