@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 const PUBLIC_PATHS = ["/login", "/verify-email"]
-const DASHBOARD_ROLES = ["ADMIN", "EDITOR", "SUPERADMIN"]
+const DASHBOARD_ROLES = ["ADMIN", "EDITOR"]
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(
@@ -38,7 +38,6 @@ async function getSession(request: NextRequest) {
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
-
   if (isPublicPath(pathname)) {
     return NextResponse.next()
   }
