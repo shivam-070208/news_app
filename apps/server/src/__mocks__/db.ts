@@ -5,7 +5,7 @@ import type { PrismaClient } from "@workspace/db"
 /**
  * Create ONE deep mock instance of Prisma
  */
-const prisma = mockDeep<PrismaClient>()
+const { prisma } = vi.hoisted(() => ({ prisma: mockDeep<PrismaClient>() }))
 
 /**
  * Mock the module BEFORE anything imports it
