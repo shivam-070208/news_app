@@ -5,7 +5,8 @@ import morgan from "morgan"
 import { toNodeHandler } from "better-auth/node"
 import { auth } from "@workspace/auth"
 import { authV1Router } from "@v1/routes/auth.route"
-import { editorV1Router } from "./api/v1/routes"
+import { editorV1Router } from "@v1/routes"
+import { categoryV1Router } from "@v1/routes/category.routes"
 
 // Variable declaration
 const app = express()
@@ -34,6 +35,9 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use("/api/v1/auth", authV1Router)
 app.use("/api/v1/editor", editorV1Router)
+app.use("/api/v1/categories", categoryV1Router)
+
+// Auth handler
 app.all("/api/auth/{*any}", toNodeHandler(auth))
 
 app.get("/", (_, res) => {

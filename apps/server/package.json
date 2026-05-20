@@ -7,7 +7,9 @@
     "dev": "tsx watch --tsconfig tsconfig.json src/server.ts",
     "build": "tsc ",
     "start": "tsx src/server.ts",
-    "lint": "eslint --fix"
+    "lint": "eslint --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -18,11 +20,15 @@
     "@types/express": "^5.0.6",
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.0.9",
+    "@types/supertest": "^7.2.0",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "eslint": "^9.39.2",
+    "supertest": "^7.2.2",
     "tsx": "^4.19.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.5",
+    "vitest-mock-extended": "^4.0.0"
   },
   "dependencies": {
     "@prisma/client": "^7.2.0",
@@ -33,6 +39,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "morgan": "^1.10.1",
-    "@workspace/shared": "workspace:*"
+    "@workspace/shared": "workspace:*",
+    "zod": "^3.25.76"
   }
 }

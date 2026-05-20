@@ -54,6 +54,11 @@ const navItems: NavItem[] = [
     icon: <NewspaperIcon />,
   },
   {
+    label: "Categories",
+    href: "/categories",
+    icon: <NewspaperIcon />,
+  },
+  {
     label: "News Management",
     href: "/news",
     icon: <NewspaperIcon />,
