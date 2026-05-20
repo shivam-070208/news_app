@@ -1,3 +1,5 @@
-export default function Page() {
-  return <div>Admin Home</div>
+import { redirect } from "next/navigation"
+
+export default function DashboardPage() {
+  redirect("/editors")
 }

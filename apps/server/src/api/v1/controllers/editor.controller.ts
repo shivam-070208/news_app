@@ -34,6 +34,7 @@ export const createEditor = tryCatch(async (req: Request, res: Response) => {
     },
   })
 
+  // TODO(jobs): Enqueue "editor-welcome-email" job with onboarding links and temporary access instructions.
   res.status(201).json({ user })
 })
 
@@ -61,6 +62,7 @@ export const updateEditor = tryCatch(async (req: Request, res: Response) => {
     },
   })
 
+  // TODO(jobs): Enqueue "editor-profile-updated" job when email/name is changed to keep notifications centralized.
   res.json({ user: updatedUser })
 })
 
@@ -82,14 +84,56 @@ export const deleteEditor = tryCatch(async (req: Request, res: Response) => {
     where: { id },
   })
 
+  // TODO(workers): Revoke active sessions/tokens for deleted editor and enqueue account-removal notification email.
   res.status(204).send()
 })
 
-export const listEditors = tryCatch(async (_: Request, res: Response) => {
-  const editors = await db.user.findMany({
-    where: { role: Role.EDITOR },
-    orderBy: { createdAt: "desc" },
-  })
+export const listEditors = tryCatch(async (req: Request, res: Response) => {
+  const pageParam = Number.parseInt(String(req.query.page ?? "1"), 10)
+  const limitParam = Number.parseInt(String(req.query.limit ?? "10"), 10)
+  const page = Number.isNaN(pageParam) || pageParam < 1 ? 1 : pageParam
+  const limit =
+    Number.isNaN(limitParam) || limitParam < 1 ? 10 : Math.min(limitParam, 50)
+  const search = String(req.query.search ?? "").trim()
+  const sortByRaw = String(req.query.sortBy ?? "createdAt")
+  const sortOrderRaw = String(req.query.sortOrder ?? "desc").toLowerCase()
 
-  res.json({ editors })
+  const allowedSortBy = new Set(["createdAt", "name", "email"])
+  const sortBy = allowedSortBy.has(sortByRaw) ? sortByRaw : "createdAt"
+  const sortOrder = sortOrderRaw === "asc" ? "asc" : "desc"
+
+  const where = {
+    role: Role.EDITOR,
+    ...(search
+      ? {
+          OR: [
+            { name: { contains: search, mode: "insensitive" as const } },
+            { email: { contains: search, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  }
+
+  const [editors, total] = await Promise.all([
+    db.user.findMany({
+      where,
+      orderBy: { [sortBy]: sortOrder },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    db.user.count({ where }),
+  ])
+
+  const totalPages = Math.max(1, Math.ceil(total / limit))
+
+  // TODO(workers): Add cache invalidation hooks if editor-list query is cached in Redis for large datasets.
+  res.json({
+    editors,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+    },
+  })
 })

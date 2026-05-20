@@ -29,12 +29,12 @@ app.use(
   })
 )
 
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 app.use("/api/v1/auth", authV1Router)
 app.use("/api/v1/editor", editorV1Router)
 app.all("/api/auth/{*any}", toNodeHandler(auth))
-
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
 
 app.get("/", (_, res) => {
   res.send("Hello World")
