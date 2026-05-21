@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const PUBLIC_PATHS = [
-  "/login",
-  "/verify-email",
-  "/api",
-  "/_next",
-  "/favicon.ico",
-]
+const PUBLIC_PATHS = ["/login", "/verify-email", "/_next", "/favicon.ico"]
 const DASHBOARD_ROLES = ["ADMIN", "EDITOR", "SUPERADMIN"]
 
 function isPublicPath(pathname: string) {

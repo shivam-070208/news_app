@@ -1,6 +1,8 @@
 "use client"
 
 import dynamic from "next/dynamic"
+import { useSearchParams } from "next/navigation"
+import { Suspense } from "react"
 
 const Editor = dynamic(() => import("./editor"), {
   ssr: false,
@@ -19,6 +21,17 @@ const Editor = dynamic(() => import("./editor"), {
   ),
 })
 
+function EditorContent() {
+  const searchParams = useSearchParams()
+  const articleId = searchParams.get("id")
+
+  return <Editor articleId={articleId || undefined} />
+}
+
 export default function EditorWrapper() {
-  return <Editor />
+  return (
+    <Suspense fallback={<div className="p-8">Loading...</div>}>
+      <EditorContent />
+    </Suspense>
+  )
 }
