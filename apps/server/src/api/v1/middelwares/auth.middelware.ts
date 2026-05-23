@@ -46,3 +46,16 @@ export const authorizeEditor = tryCatch(
     }
   }
 )
+
+export const attachOptionalSession = tryCatch(
+  async (req: Request, _: Response, next: NextFunction) => {
+    const session = await auth.api.getSession({
+      headers: req.headers as HeadersInit,
+    })
+    if (session && session.user) {
+      ;(req as RequestWithSession).session =
+        session as unknown as RequestWithSession["session"]
+    }
+    next()
+  }
+)

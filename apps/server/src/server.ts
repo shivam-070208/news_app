@@ -7,6 +7,7 @@ import { auth } from "@workspace/auth"
 import { authV1Router } from "@v1/routes/auth.route"
 import { editorV1Router } from "@v1/routes"
 import { categoryV1Router } from "@v1/routes/category.routes"
+import "@/jobs/category-click"
 
 // Variable declaration
 const app = express()

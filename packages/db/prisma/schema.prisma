@@ -14,18 +14,19 @@ enum Role {
 }
 
 model User {
-  id            String            @id @default(cuid())
-  email         String            @unique
-  name          String?
-  role          Role              @default(READER)
-  preferences   UserPreference?
-  comments      Comment[]
-  emailVerified Boolean           @default(false)
-  image         String?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  name               String?
+  role               Role                @default(READER)
+  preferences        UserPreference?
+  comments           Comment[]
+  emailVerified      Boolean             @default(false)
+  image              String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  sessions           Session[]
+  accounts           Account[]
+  userCategoryClicks UserCategoryClick[]
 
   @@map("user")
 }
@@ -40,6 +41,7 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([token])
   @@index([userId])
   @@map("session")
@@ -77,14 +79,30 @@ model Verification {
   @@map("verification")
 }
 
-
 model Category {
-  id        String     @id @default(cuid())
+  id        String              @id @default(cuid())
   name      String
-  slug      String     @unique
+  slug      String              @unique
   articles  Article[]
-  createdAt DateTime   @default(now())
+  clicks    UserCategoryClick[]
+  createdAt DateTime            @default(now())
+
   @@map("category")
+}
+
+model UserCategoryClick {
+  id         String   @id @default(cuid())
+  userId     String
+  categoryId String
+  count      Int      @default(0)
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId])
+  @@index([userId])
+  @@index([categoryId])
+  @@map("usercategoryclick")
 }
 
 model Tag {
@@ -96,25 +114,25 @@ model Tag {
 }
 
 model Article {
-  id               String       @id @default(cuid())
-  title            String
-  slug             String       @unique
-  summary          String
-  fullContent      String       @db.Text
-  thumbnailUrl     String?
-  authorId         String
-  categoryId       String
-  category         Category     @relation(fields: [categoryId], references: [id])
-  tags             ArticleTag[]
-  status           ArticleStatus @default(DRAFT)
-  isBreaking       Boolean      @default(false)
+  id                String        @id @default(cuid())
+  title             String
+  slug              String        @unique
+  summary           String
+  fullContent       String        @db.Text
+  thumbnailUrl      String?
+  authorId          String
+  categoryId        String
+  category          Category      @relation(fields: [categoryId], references: [id])
+  tags              ArticleTag[]
+  status            ArticleStatus @default(DRAFT)
+  isBreaking        Boolean       @default(false)
   breakingExpiresAt DateTime?
-  viewCount        Int          @default(0) 
-  comments         Comment[]
-  views            ArticleView[]
-  publishedAt      DateTime?
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  viewCount         Int           @default(0)
+  comments          Comment[]
+  views             ArticleView[]
+  publishedAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
   @@map("article")
 }
@@ -130,8 +148,8 @@ model ArticleTag {
   tagId     String
   article   Article @relation(fields: [articleId], references: [id])
   tag       Tag     @relation(fields: [tagId], references: [id])
-  @@id([articleId, tagId])
 
+  @@id([articleId, tagId])
   @@map("articletag")
 }
 
@@ -139,8 +157,8 @@ model ArticleView {
   id        String   @id @default(cuid())
   articleId String
   article   Article  @relation(fields: [articleId], references: [id])
-  userId    String?  
-  ipHash    String   
+  userId    String?
+  ipHash    String
   viewedAt  DateTime @default(now())
 
   @@index([articleId])
@@ -148,18 +166,18 @@ model ArticleView {
 }
 
 model Comment {
-  id              String    @id @default(cuid())
+  id              String        @id @default(cuid())
   articleId       String
-  article         Article   @relation(fields: [articleId], references: [id])
+  article         Article       @relation(fields: [articleId], references: [id])
   userId          String
-  user            User      @relation(fields: [userId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
   body            String
-  parentCommentId String?  
-  parent          Comment?  @relation("Replies", fields: [parentCommentId], references: [id])
-  replies         Comment[] @relation("Replies")
+  parentCommentId String?
+  parent          Comment?      @relation("Replies", fields: [parentCommentId], references: [id])
+  replies         Comment[]     @relation("Replies")
   status          CommentStatus @default(PENDING)
-  isDeleted       Boolean   @default(false)
-  createdAt       DateTime  @default(now())
+  isDeleted       Boolean       @default(false)
+  createdAt       DateTime      @default(now())
 
   @@map("comment")
 }
@@ -174,7 +192,7 @@ model UserPreference {
   id          String   @id @default(cuid())
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id])
-  categoryIds String[] 
+  categoryIds String[]
   tagIds      String[]
   updatedAt   DateTime @updatedAt
 

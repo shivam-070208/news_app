@@ -55,6 +55,86 @@ export async function listCategories({
   return { data, total }
 }
 
+export async function listPublicCategories({
+  page,
+  limit,
+  search,
+}: {
+  page: number
+  limit: number
+  search?: string
+}) {
+  const skip = (page - 1) * limit
+
+  const where = search
+    ? { name: { contains: search, mode: "insensitive" as const } }
+    : {}
+
+  const [categories, total] = await Promise.all([
+    db.category.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+      },
+    }),
+    db.category.count({ where }),
+  ])
+
+  return { data: categories, total }
+}
+
+export async function getUserFavoriteCategories(userId: string, limit = 5) {
+  try {
+    const favorites = await db.userCategoryClick.findMany({
+      where: { userId },
+      orderBy: { count: "desc" },
+      take: limit,
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+      },
+    })
+
+    return favorites.map((item) => ({
+      ...item.category,
+      clicks: item.count,
+    }))
+  } catch (err) {
+    console.log(err)
+    return []
+  }
+}
+
+export async function incrementUserCategoryClick(
+  userId: string,
+  categoryId: string
+) {
+  console.log(userId, categoryId)
+  const w = await db.userCategoryClick.upsert({
+    where: { userId_categoryId: { userId, categoryId } },
+    create: {
+      userId,
+      categoryId,
+      count: 1,
+    },
+    update: {
+      count: {
+        increment: 1,
+      },
+    },
+  })
+}
+
 // ─── Get single ───────────────────────────────────────────────────────────────
 
 export async function getCategoryById(id: string) {
@@ -64,7 +144,6 @@ export async function getCategoryById(id: string) {
       id: true,
       name: true,
       slug: true,
-      createdAt: true,
       _count: { select: { articles: true } },
     },
   })

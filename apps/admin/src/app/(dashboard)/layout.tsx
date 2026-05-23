@@ -1,5 +1,5 @@
 import React from "react"
-import AdminSidebar from "@/src/components/admin-sidebar"
+import AdminSidebar from "@/components/admin-sidebar"
 
 interface DashboardLayoutProps {
   children: React.ReactNode

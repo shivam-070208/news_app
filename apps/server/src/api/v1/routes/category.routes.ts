@@ -1,7 +1,11 @@
 import { Router } from "express"
 import { CategoryController } from "@v1/controllers/category.controller"
 import { validate } from "@/api/v1/middelwares/validate"
-import { authorizeUser, authorizeAdmin } from "@v1/middelwares/auth.middelware"
+import {
+  authorizeUser,
+  authorizeAdmin,
+  attachOptionalSession,
+} from "@v1/middelwares/auth.middelware"
 import {
   createCategorySchema,
   updateCategorySchema,
@@ -15,6 +19,17 @@ const categoryController = new CategoryController()
 
 // ─── Public routes (no auth needed) ──────────────────────────────────────────
 // Readers need to browse categories on the client site
+
+// GET /api/v1/categories/public — public list for web with optional favorites for logged-in users
+router.get(
+  "/public",
+  attachOptionalSession,
+  validate("query", listCategoriesQuerySchema),
+  categoryController.listPublic
+)
+
+// GET /api/v1/categories/:id/click — track user category clicks asynchronously
+router.post("/:id/click", authorizeUser, categoryController.trackClick)
 
 // GET /api/v1/categories  — public list (no article count by default)
 router.get(
