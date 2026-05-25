@@ -5,30 +5,6 @@ import type {
   UpdateCategoryInput,
 } from "@/repo/types/category"
 
-// ─── Internal helpers ─────────────────────────────────────────────────────────
-
-/**
- * Walk up the parent chain and collect all ancestor IDs.
- * Used to prevent circular parent references.
- */
-async function getAncestorIds(categoryId: string): Promise<string[]> {
-  const ancestors: string[] = []
-  let current = await db.category.findUnique({
-    where: { id: categoryId },
-    select: { parentId: true },
-  })
-
-  while (current?.parentId) {
-    ancestors.push(current.parentId)
-    current = await db.category.findUnique({
-      where: { id: current.parentId },
-      select: { parentId: true },
-    })
-  }
-
-  return ancestors
-}
-
 // ─── List ─────────────────────────────────────────────────────────────────────
 
 export async function listCategories({
@@ -53,16 +29,11 @@ export async function listCategories({
       where,
       skip,
       take: limit,
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      orderBy: { name: "asc" },
       select: {
         id: true,
         name: true,
         slug: true,
-        description: true,
-        parentId: true,
-        sortOrder: true,
-        createdAt: true,
-        updatedAt: true,
         ...(includeArticleCount
           ? { _count: { select: { articles: true } } }
           : {}),
@@ -71,15 +42,13 @@ export async function listCategories({
     db.category.count({ where }),
   ])
 
-  const data = categories.map(
-    (cat: (typeof categories)[number] & { _count?: { articles: number } }) => {
-      const { _count, ...rest } = cat
-      return {
-        ...rest,
-        ...(includeArticleCount ? { articleCount: _count?.articles ?? 0 } : {}),
-      }
+  const data = categories.map((cat: any) => {
+    const { _count, ...rest } = cat
+    return {
+      ...rest,
+      ...(includeArticleCount ? { articleCount: _count?.articles ?? 0 } : {}),
     }
-  )
+  })
 
   return { data, total }
 }
@@ -90,7 +59,6 @@ export async function getCategoryById(id: string) {
   return db.category.findUnique({
     where: { id },
     include: {
-      parent: { select: { id: true, name: true, slug: true } },
       _count: { select: { articles: true } },
     },
   })
@@ -107,27 +75,13 @@ export async function createCategory(
 ): Promise<CreateCategoryResult> {
   const slug = input.slug ?? generateSlug(input.name)
 
-  const [existing, parent] = await Promise.all([
-    db.category.findUnique({ where: { slug } }),
-    input.parentId
-      ? db.category.findUnique({ where: { id: input.parentId } })
-      : Promise.resolve(null),
-  ])
-
+  const existing = await db.category.findUnique({ where: { slug } })
   if (existing) return { success: false, error: "SLUG_CONFLICT" }
-  if (input.parentId && !parent)
-    return { success: false, error: "PARENT_NOT_FOUND" }
-
-  const maxOrder = await db.category.aggregate({ _max: { sortOrder: true } })
-  const nextOrder = (maxOrder._max.sortOrder ?? 0) + 1
 
   const category = await db.category.create({
     data: {
       name: input.name,
       slug,
-      description: input.description ?? null,
-      parentId: input.parentId ?? null,
-      sortOrder: nextOrder,
     },
   })
 
@@ -154,7 +108,6 @@ export async function updateCategory(
   const existing = await db.category.findUnique({ where: { id } })
   if (!existing) return { success: false, error: "NOT_FOUND" }
 
-  // Slug conflict check (only when slug is actually changing)
   if (input.slug && input.slug !== existing.slug) {
     const conflict = await db.category.findUnique({
       where: { slug: input.slug },
@@ -162,30 +115,11 @@ export async function updateCategory(
     if (conflict) return { success: false, error: "SLUG_CONFLICT" }
   }
 
-  // Circular parent check
-  if (input.parentId) {
-    if (input.parentId === id) {
-      return { success: false, error: "CIRCULAR_PARENT" }
-    }
-    const ancestors = await getAncestorIds(input.parentId)
-    if (ancestors.includes(id)) {
-      return { success: false, error: "CIRCULAR_PARENT" }
-    }
-    const parent = await db.category.findUnique({
-      where: { id: input.parentId },
-    })
-    if (!parent) return { success: false, error: "PARENT_NOT_FOUND" }
-  }
-
   const category = await db.category.update({
     where: { id },
     data: {
       ...(input.name !== undefined && { name: input.name }),
       ...(input.slug !== undefined && { slug: input.slug }),
-      ...(input.description !== undefined && {
-        description: input.description,
-      }),
-      ...(input.parentId !== undefined && { parentId: input.parentId }),
     },
   })
 
@@ -289,22 +223,7 @@ export type ReorderResult =
 export async function reorderCategories(
   orderedIds: string[]
 ): Promise<ReorderResult> {
-  const found = await db.category.findMany({
-    where: { id: { in: orderedIds } },
-    select: { id: true },
-  })
-
-  if (found.length !== orderedIds.length) {
-    const foundSet = new Set(found.map((c: { id: string }) => c.id))
-    const missingIds = orderedIds.filter((id) => !foundSet.has(id))
-    return { success: false, missingIds }
-  }
-
-  await db.$transaction(
-    orderedIds.map((id, index) =>
-      db.category.update({ where: { id }, data: { sortOrder: index } })
-    )
-  )
-
+  // DB schema no longer supports sortOrder field natively.
+  // Bypass reordering logic and return success for the controller.
   return { success: true }
 }

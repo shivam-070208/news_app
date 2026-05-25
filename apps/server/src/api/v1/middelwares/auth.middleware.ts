@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { ApiErrors } from "@/lib/api-response"
+import { auth } from "@workspace/auth"
+import { fromNodeHeaders } from "better-auth/node"
 
 /**
  * Extend Express Request to include the authenticated user.
@@ -17,11 +19,35 @@ declare global {
   }
 }
 
+async function populateUser(req: Request) {
+  if (!req.user) {
+    try {
+      const session = await auth.api.getSession({
+        headers: fromNodeHeaders(req.headers),
+      })
+      if (session?.user) {
+        req.user = {
+          id: session.user.id,
+          email: session.user.email,
+          role: (session.user as any).role || "READER",
+        }
+      }
+    } catch (error) {
+      console.error("[Auth Middleware] Session error:", error)
+    }
+  }
+}
+
 /**
  * Requires a valid authenticated user on req.user.
  * Your JWT/session middleware must run before this and populate req.user.
  */
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
+export async function requireAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  await populateUser(req)
   if (!req.user) {
     return ApiErrors.unauthorized(res)
   }
@@ -32,7 +58,12 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
  * Requires ADMIN or EDITOR role.
  * Must be used after requireAuth.
  */
-export function requireAdmin(req: Request, res: Response, next: NextFunction) {
+export async function requireAdmin(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  await populateUser(req)
   if (!req.user) {
     return ApiErrors.unauthorized(res)
   }
@@ -46,11 +77,12 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
  * Requires ADMIN role only (not EDITOR).
  * Use for destructive operations like delete.
  */
-export function requireAdminOnly(
+export async function requireAdminOnly(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
+  await populateUser(req)
   if (!req.user) {
     return ApiErrors.unauthorized(res)
   }

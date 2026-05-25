@@ -1,4 +1,4 @@
-export { db } from "./client"
+export { db } from "./client.js"
 
-export * from "./generated/prisma/client"
-export { PrismaClient } from "./generated/prisma/client"
+export * from "./generated/prisma/client.js"
+export { PrismaClient } from "./generated/prisma/client.js"

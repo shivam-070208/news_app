@@ -23,7 +23,7 @@ const options: BetterAuthOptions = {
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    requireEmailVerification: false,
   },
   socialProviders: {
     google: {

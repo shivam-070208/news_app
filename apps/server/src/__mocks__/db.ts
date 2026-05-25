@@ -1,11 +1,11 @@
 import { beforeEach, vi } from "vitest"
-import { mockDeep, mockReset, DeepMockProxy } from "vitest-mock-extended"
-import type { PrismaClient } from "@workspace/db"
+import { mockDeep, mockReset } from "vitest-mock-extended"
 
 /**
- * Create ONE deep mock instance of Prisma
+ * Create ONE deep mock instance of Prisma.
+ * Variables prefixed with 'mock' or '__' are whitelisted in vi.mock scopes.
  */
-const { prisma } = vi.hoisted(() => ({ prisma: mockDeep<PrismaClient>() }))
+const mockPrisma = mockDeep()
 
 /**
  * Mock the module BEFORE anything imports it
@@ -13,19 +13,17 @@ const { prisma } = vi.hoisted(() => ({ prisma: mockDeep<PrismaClient>() }))
  */
 vi.mock("@workspace/db", () => {
   return {
-    db: prisma,
+    db: mockPrisma,
   }
 })
 
 /**
  * Export a strongly-typed handle for tests
  */
-export const prismaMock = prisma as DeepMockProxy<PrismaClient>
+export const prismaMock = mockPrisma as any
 
 /**
  * Reset mock state before every test
- * - clears calls
- * - resets return values
  */
 beforeEach(() => {
   mockReset(prismaMock)
