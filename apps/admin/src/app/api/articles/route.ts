@@ -30,36 +30,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // ── TODO: Persist to database / forward to backend ─────────────
-    // Example: const article = await db.articles.create({ data: body })
-    //          return NextResponse.json({ success: true, article })
-
-    console.log("[POST /api/articles] Received article:", {
-      headline: body.headline,
-      status: body.status,
-      isBreakingNews: body.isBreakingNews,
-      tags: body.tags,
-      scheduledAt: body.scheduledAt,
-    })
-
+    // This route is not implemented — use /api/admin/articles instead.
     return NextResponse.json(
       {
-        success: true,
-        message:
-          body.status === "publish"
-            ? "Article published successfully."
-            : "Article saved as draft.",
-        data: {
-          headline: body.headline,
-          summary: body.summary,
-          status: body.status,
-          scheduledAt: body.scheduledAt,
-          isBreakingNews: body.isBreakingNews,
-          tags: body.tags,
-          // content omitted from response for brevity
-        },
+        success: false,
+        error: "Not implemented. Use /api/admin/articles to create articles.",
       },
-      { status: 201 }
+      { status: 501 }
     )
   } catch (err) {
     console.error("[POST /api/articles] Error:", err)

@@ -1,4 +1,4 @@
-import { db } from "@workspace/db"
+import { db, Prisma } from "@workspace/db"
 
 // ─── Payload Types ────────────────────────────────────────────────────────────
 
@@ -12,7 +12,7 @@ export interface CreateArticlePayload {
   tags: string[]
 }
 
-export interface UpdateArticlePayload extends Partial<CreateArticlePayload> {}
+export type UpdateArticlePayload = Partial<CreateArticlePayload>
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -29,13 +29,11 @@ function generateSlug(title: string) {
 
 /** Upsert the "General" fallback category */
 async function getDefaultCategory() {
-  let category = await db.category.findFirst()
-  if (!category) {
-    category = await db.category.create({
-      data: { name: "General", slug: "general" },
-    })
-  }
-  return category
+  return db.category.upsert({
+    where: { slug: "general" },
+    create: { name: "General", slug: "general" },
+    update: {},
+  })
 }
 
 /** Map frontend status string → DB enum string */
@@ -138,7 +136,7 @@ export async function createArticle(
 }
 
 export async function updateArticle(id: string, data: UpdateArticlePayload) {
-  const updateData: Record<string, unknown> = {}
+  const updateData: Prisma.ArticleUpdateInput = {}
 
   if (data.headline !== undefined) updateData.title = data.headline
   if (data.summary !== undefined) updateData.summary = data.summary
@@ -153,21 +151,28 @@ export async function updateArticle(id: string, data: UpdateArticlePayload) {
       : null
   }
 
+  // Resolve tags outside the transaction (upserts on the Tag table are independent)
+  let tagConnections: { tagId: string }[] = []
   if (data.tags !== undefined) {
-    // Replace tags: delete old → create new
-    await db.articleTag.deleteMany({ where: { articleId: id } })
-    const tagConnections = await resolveTagConnections(data.tags)
-    if (tagConnections.length > 0) {
-      updateData.tags = { create: tagConnections }
-    }
+    tagConnections = await resolveTagConnections(data.tags)
   }
 
-  return db.article.update({
-    where: { id },
-    data: updateData as any,
-    include: {
-      tags: { include: { tag: true } },
-    },
+  return db.$transaction(async (tx) => {
+    if (data.tags !== undefined) {
+      // Replace tags: delete old → create new
+      await tx.articleTag.deleteMany({ where: { articleId: id } })
+      if (tagConnections.length > 0) {
+        updateData.tags = { create: tagConnections }
+      }
+    }
+
+    return tx.article.update({
+      where: { id },
+      data: updateData,
+      include: {
+        tags: { include: { tag: true } },
+      },
+    })
   })
 }
 
@@ -182,8 +187,10 @@ export async function updateArticleStatus(
 }
 
 export async function deleteArticle(id: string) {
-  await db.articleTag.deleteMany({ where: { articleId: id } })
-  await db.articleView.deleteMany({ where: { articleId: id } })
-  await db.comment.deleteMany({ where: { articleId: id } })
-  return db.article.delete({ where: { id } })
+  return db.$transaction(async (tx) => {
+    await tx.articleTag.deleteMany({ where: { articleId: id } })
+    await tx.articleView.deleteMany({ where: { articleId: id } })
+    await tx.comment.deleteMany({ where: { articleId: id } })
+    return tx.article.delete({ where: { id } })
+  })
 }

@@ -16,10 +16,12 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url)
-  const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10))
+  const rawPage = parseInt(searchParams.get("page") || "1", 10)
+  const rawLimit = parseInt(searchParams.get("limit") || "10", 10)
+  const page = Math.max(1, Number.isFinite(rawPage) ? rawPage : 1)
   const limit = Math.min(
     50,
-    Math.max(1, parseInt(searchParams.get("limit") || "10", 10))
+    Math.max(1, Number.isFinite(rawLimit) ? rawLimit : 10)
   )
   const status = searchParams.get("status") || undefined
 

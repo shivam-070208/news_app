@@ -22,7 +22,7 @@
     "@editorjs/quote": "^2.7.6",
     "@editorjs/table": "^2.4.5",
     "@editorjs/underline": "^1.2.1",
-    "@prisma/client": "5",
+    "@prisma/client": "^7.2.0",
     "@workspace/auth": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/ui": "workspace:*",
@@ -30,7 +30,7 @@
     "cloudinary": "^2.9.0",
     "dotenv": "^17.4.2",
     "next": "16.2.3",
-    "prisma": "5",
+    "prisma": "^7.2.0",
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
     "react-dom": "19.2.4"

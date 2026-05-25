@@ -75,7 +75,7 @@ export default function Editor({ articleId }: { articleId?: string }) {
   const [publishStatus, setPublishStatus] = useState<PublishStatus>("draft")
   const [scheduledAt, setScheduledAt] = useState("")
   const [isBreakingNews, setIsBreakingNews] = useState(false)
-  const [tags, setTags] = useState<string[]>(["Politics", "Elections"])
+  const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState("")
   const [editorWordCount, setEditorWordCount] = useState(0)
   const SUGGESTED_TAGS = [
@@ -102,35 +102,56 @@ export default function Editor({ articleId }: { articleId?: string }) {
     async function fetchArticle() {
       try {
         const res = await fetch(`/api/admin/articles/${articleId}`)
-        if (res.ok) {
-          const { data } = await res.json()
-          setHeadline(data.title || "")
-          setSummary(data.summary || "")
-          setPublishStatus(
-            data.status?.toLowerCase() === "published" ? "publish" : "draft"
+        if (!res.ok) {
+          const errorText = await res.text().catch(() => res.statusText)
+          showNotification(
+            `Failed to load article: ${errorText || res.statusText}`,
+            "error"
           )
-          setIsBreakingNews(data.isBreaking || false)
+          return // keep isFetching true so Save stays disabled
+        }
 
-          if (data.publishedAt) {
-            // format to YYYY-MM-DDThh:mm for datetime-local input
-            const date = new Date(data.publishedAt)
-            date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
-            setScheduledAt(date.toISOString().slice(0, 16))
-          }
+        const { data } = await res.json()
+        setHeadline(data.title || "")
+        setSummary(data.summary || "")
+        setPublishStatus(
+          data.status?.toLowerCase() === "published" ? "publish" : "draft"
+        )
+        setIsBreakingNews(data.isBreaking || false)
 
-          if (data.tags && Array.isArray(data.tags)) {
-            setTags(data.tags.map((t: any) => t.tag.name))
-          }
+        if (data.publishedAt) {
+          // format to YYYY-MM-DDThh:mm for datetime-local input
+          const date = new Date(data.publishedAt)
+          date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
+          setScheduledAt(date.toISOString().slice(0, 16))
+        }
 
-          if (data.fullContent) {
+        if (data.tags && Array.isArray(data.tags)) {
+          setTags(data.tags.map((t: any) => t.tag.name))
+        }
+
+        if (data.fullContent) {
+          try {
             const parsed = JSON.parse(data.fullContent)
             setInitialContent(parsed)
+          } catch (parseErr) {
+            console.error("Failed to parse article content", parseErr)
+            showNotification(
+              "Article content is corrupted and could not be loaded.",
+              "error"
+            )
+            return // keep isFetching true so Save stays disabled
           }
         }
+
+        setIsFetching(false) // only clear on full success
       } catch (e) {
         console.error("Failed to fetch article", e)
-      } finally {
-        setIsFetching(false)
+        showNotification(
+          "An unexpected error occurred while loading the article.",
+          "error"
+        )
+        // keep isFetching true so Save stays disabled
       }
     }
 
@@ -303,7 +324,7 @@ export default function Editor({ articleId }: { articleId?: string }) {
   const handleLinkInsert = () => {
     const validUrl = getValidatedUrl(linkUrl)
     if (!validUrl) {
-      console.error("Invalid or dangerous URL.")
+      showNotification("Invalid or dangerous URL.", "error")
       return
     }
 
@@ -336,11 +357,11 @@ export default function Editor({ articleId }: { articleId?: string }) {
           stretched: false,
         })
       } else {
-        console.log("Upload failed: " + data.error)
+        showNotification(data.error || "Unable to upload file.", "error")
       }
     } catch (err) {
       console.error(err)
-      console.log("Error uploading image")
+      showNotification("Error uploading image.", "error")
     } finally {
       setPanel(null)
       e.target.value = ""
@@ -351,7 +372,7 @@ export default function Editor({ articleId }: { articleId?: string }) {
   const handleImageUrlInsert = () => {
     const validUrl = getValidatedUrl(imageUrl, true)
     if (!validUrl) {
-      console.error("Invalid or dangerous Image URL.")
+      showNotification("Invalid or dangerous image URL.", "error")
       return
     }
 

@@ -283,8 +283,10 @@ export default function NewsManagementPage() {
         setArticles(data.items)
         setTotalPages(data.totalPages)
         setTotal(data.total)
+        return data.items
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error fetching articles")
+        return []
       } finally {
         setLoading(false)
       }
@@ -301,7 +303,11 @@ export default function NewsManagementPage() {
       const res = await fetch(`/api/admin/articles/${id}`, { method: "DELETE" })
       if (!res.ok) throw new Error("Failed to delete")
       // Stay on current page, but go back one if now empty
-      await fetchArticles(page, filter)
+      const items = await fetchArticles(page, filter)
+      if (items.length === 0 && page > 1) {
+        setPage(page - 1)
+        await fetchArticles(page - 1, filter)
+      }
     } catch {
       setError("Failed to delete article. Please try again.")
     }

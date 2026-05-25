@@ -18,12 +18,6 @@ export function isAllowedDashboardRole(role?: string) {
 }
 
 export async function requireAuth(request: NextRequest) {
-  // TEMP BYPASS FOR BROWSER TESTING
-  return {
-    session: { id: "test" },
-    user: { id: "test-user-id", role: "ADMIN", email: "admin@test.com" },
-  }
-
   const session = await getSession(request)
 
   if (!session?.user) {
