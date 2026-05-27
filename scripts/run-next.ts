@@ -25,7 +25,6 @@ console.log(`Starting Next.js in ${mode} mode on port ${port}`)
 // Spawn Next.js process
 const child = spawn("next", [mode, "-p", port], {
   stdio: "inherit",
-  shell: true,
 })
 
 // Handle shutdown signals
