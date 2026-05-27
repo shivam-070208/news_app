@@ -1,9 +1,6 @@
 import { defineConfig } from "vitest/config"
 import path from "path"
-
 import { fileURLToPath } from "node:url"
-import { defineConfig } from "vitest/config"
-import path from "path"
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 
@@ -18,6 +15,7 @@ export default defineConfig({
     globals: true,
     environment: "node",
     setupFiles: ["./src/__mocks__/db.ts"],
+    include: ["src/**/*.test.ts"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],

@@ -170,13 +170,20 @@ enum CommentStatus {
   FLAGGED
 }
 
+enum EmailFrequency {
+  DAILY
+  WEEKLY
+}
+
 model UserPreference {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id])
-  categoryIds String[] 
-  tagIds      String[]
-  updatedAt   DateTime @updatedAt
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  user           User           @relation(fields: [userId], references: [id])
+  categoryIds    String[] 
+  tagIds         String[]
+  receiveEmails  Boolean        @default(false)
+  emailFrequency EmailFrequency @default(DAILY)
+  updatedAt      DateTime       @updatedAt
 
   @@map("userpreference")
 }
