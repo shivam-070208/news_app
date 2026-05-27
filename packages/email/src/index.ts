@@ -1,8 +1,18 @@
 import { EmailProvider } from "./provider"
 import { NodemailerProvider } from "./providers/nodemailer"
 
-// Initialize the active provider
-const activeProvider: EmailProvider = new NodemailerProvider()
+let activeProvider: EmailProvider | null = null
+
+export const getEmailProvider = (): EmailProvider => {
+  if (!activeProvider) {
+    activeProvider = new NodemailerProvider()
+  }
+  return activeProvider
+}
+
+export const setEmailProvider = (provider: EmailProvider) => {
+  activeProvider = provider
+}
 
 export interface ArticlePreview {
   title: string
@@ -23,7 +33,7 @@ export const sendNewsEmail = async (to: string, articles: ArticlePreview[]) => {
   })
   textBody += "\nThank you for reading!"
 
-  return activeProvider.sendEmail(to, subject, textBody)
+  return getEmailProvider().sendEmail(to, subject, textBody)
 }
 
 export * from "./provider"

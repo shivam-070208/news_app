@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { db } from "@workspace/db"
+import { db, EmailFrequency } from "@workspace/db"
 import { ApiErrors, sendSuccess } from "@/lib/api-response"
 import { auth } from "@workspace/auth"
 import type { UpdatePreferencesInput } from "@/repo/types/preferences"
@@ -24,7 +24,7 @@ export class PreferencesController {
           categoryIds: [],
           tagIds: [],
           receiveEmails: false,
-          emailFrequency: "DAILY",
+          emailFrequency: EmailFrequency.DAILY,
         },
         update: {}, // no-op if it already exists
       })
@@ -96,7 +96,7 @@ export class PreferencesController {
           categoryIds: categoryIds ?? [],
           tagIds: tagIds ?? [],
           receiveEmails: receiveEmails ?? false,
-          emailFrequency: emailFrequency ?? "DAILY",
+          emailFrequency: emailFrequency ?? EmailFrequency.DAILY,
         },
       })
 

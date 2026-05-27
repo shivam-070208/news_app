@@ -39,6 +39,7 @@ function Chip({
     <button
       id={id}
       type="button"
+      aria-pressed={selected}
       onClick={onClick}
       className={`inline-flex items-center gap-1 rounded-full border px-4 py-2 text-sm font-medium transition-all duration-150 ${
         selected
@@ -211,6 +212,8 @@ export default function SubscriptionPage() {
                 <button
                   id="email-toggle"
                   type="button"
+                  role="switch"
+                  aria-checked={preferences.receiveEmails}
                   onClick={() =>
                     setPreferences((p) => ({
                       ...p,

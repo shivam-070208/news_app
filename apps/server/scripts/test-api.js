@@ -2,7 +2,12 @@ const fs = require("fs")
 
 async function runTests() {
   const BASE_URL = "http://localhost:3002"
-  const CRON_SECRET = ""
+  const CRON_SECRET = process.env.CRON_SECRET
+  if (!CRON_SECRET) {
+    throw new Error(
+      "CRON_SECRET is required to test /api/v1/cron/send-newsletters"
+    )
+  }
   let cookie = ""
 
   console.log("--- 1. Creating a User ---")

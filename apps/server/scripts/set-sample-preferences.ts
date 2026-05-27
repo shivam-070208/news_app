@@ -1,5 +1,5 @@
 import "../src/env"
-import { db } from "@workspace/db"
+import { db, EmailFrequency } from "@workspace/db"
 
 async function main() {
   const BASE_URL = "http://localhost:3002"
@@ -60,7 +60,7 @@ async function main() {
     },
     body: JSON.stringify({
       receiveEmails: true,
-      emailFrequency: "DAILY",
+      emailFrequency: EmailFrequency.DAILY,
       categoryIds,
       tagIds: [],
     }),

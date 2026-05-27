@@ -4,6 +4,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest"
 import { preferencesV1Router } from "./preferences.route"
 import { prismaMock } from "../../../__mocks__/db"
 import { auth } from "@workspace/auth"
+import { EmailFrequency } from "@workspace/db"
 
 // Mock the auth module
 vi.mock("@workspace/auth", () => {
@@ -53,7 +54,7 @@ describe("Preferences Routes", () => {
         categoryIds: [],
         tagIds: [],
         receiveEmails: false,
-        emailFrequency: "DAILY",
+        emailFrequency: EmailFrequency.DAILY,
       }
 
       prismaMock.userPreference.upsert.mockResolvedValue(mockPreference as any)
@@ -70,7 +71,7 @@ describe("Preferences Routes", () => {
           categoryIds: [],
           tagIds: [],
           receiveEmails: false,
-          emailFrequency: "DAILY",
+          emailFrequency: EmailFrequency.DAILY,
         },
         update: {},
       })
@@ -164,7 +165,7 @@ describe("Preferences Routes", () => {
         categoryIds: ["cl00000000000000000000003"],
         tagIds: ["cl00000000000000000000004"],
         receiveEmails: true,
-        emailFrequency: "WEEKLY",
+        emailFrequency: EmailFrequency.WEEKLY,
       } as any)
 
       const res = await request(app)
@@ -173,26 +174,26 @@ describe("Preferences Routes", () => {
           categoryIds: ["cl00000000000000000000003"],
           tagIds: ["cl00000000000000000000004"],
           receiveEmails: true,
-          emailFrequency: "WEEKLY",
+          emailFrequency: EmailFrequency.WEEKLY,
         })
 
       expect(res.status).toBe(200)
       expect(res.body.success).toBe(true)
-      expect(res.body.data.emailFrequency).toBe("WEEKLY")
+      expect(res.body.data.emailFrequency).toBe(EmailFrequency.WEEKLY)
       expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: { userId: "u_1" },
         update: {
           categoryIds: ["cl00000000000000000000003"],
           tagIds: ["cl00000000000000000000004"],
           receiveEmails: true,
-          emailFrequency: "WEEKLY",
+          emailFrequency: EmailFrequency.WEEKLY,
         },
         create: {
           userId: "u_1",
           categoryIds: ["cl00000000000000000000003"],
           tagIds: ["cl00000000000000000000004"],
           receiveEmails: true,
-          emailFrequency: "WEEKLY",
+          emailFrequency: EmailFrequency.WEEKLY,
         },
       })
     })

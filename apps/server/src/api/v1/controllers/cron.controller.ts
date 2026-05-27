@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { db } from "@workspace/db"
+import { db, EmailFrequency } from "@workspace/db"
 import { sendNewsEmail, type ArticlePreview } from "@workspace/email"
 import { ApiErrors, sendSuccess } from "@/lib/api-response"
 
@@ -50,8 +50,10 @@ export class CronController {
       }
 
       // ── Validate frequency param ──────────────────────────────────────────
-      const frequency = (req.query.frequency as string)?.toUpperCase()
-      if (!frequency || (frequency !== "DAILY" && frequency !== "WEEKLY")) {
+      const frequency = (
+        req.query.frequency as string
+      )?.toUpperCase() as EmailFrequency
+      if (!frequency || !Object.values(EmailFrequency).includes(frequency)) {
         return ApiErrors.validation(
           res,
           "Query param `frequency` must be either DAILY or WEEKLY"

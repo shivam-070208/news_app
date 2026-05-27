@@ -4,6 +4,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest"
 import { cronV1Router } from "./cron.route"
 import { prismaMock } from "../../../__mocks__/db"
 import { sendNewsEmail } from "@workspace/email"
+import { EmailFrequency } from "@workspace/db"
 
 // Mock the email package
 vi.mock("@workspace/email", () => {
@@ -98,7 +99,7 @@ describe("Cron Routes", () => {
         categoryIds: ["cat_1"],
         tagIds: [],
         receiveEmails: true,
-        emailFrequency: "DAILY",
+        emailFrequency: EmailFrequency.DAILY,
         user: { email: "user1@example.com" },
       },
       {
@@ -107,7 +108,7 @@ describe("Cron Routes", () => {
         categoryIds: [], // no categories selected -> falls back to top global news
         tagIds: [],
         receiveEmails: true,
-        emailFrequency: "DAILY",
+        emailFrequency: EmailFrequency.DAILY,
         user: { email: "user2@example.com" },
       },
     ]
