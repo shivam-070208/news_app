@@ -79,7 +79,9 @@ export default function SubscriptionPage() {
     const init = async () => {
       try {
         const [catRes, tagRes, prefRes] = await Promise.all([
-          fetch(`${API_URL}/api/v1/categories`, { credentials: "include" }),
+          fetch(`${API_URL}/api/v1/categories?page=1&limit=100`, {
+            credentials: "include",
+          }),
           fetch(`${API_URL}/api/v1/tags`, { credentials: "include" }),
           fetch(`${API_URL}/api/v1/preferences`, { credentials: "include" }),
         ])
