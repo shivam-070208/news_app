@@ -44,8 +44,23 @@ export class CronController {
   public async sendNewsletters(req: Request, res: Response) {
     try {
       // ── Auth ──────────────────────────────────────────────────────────────
+import { timingSafeEqual } from "crypto"
+
+export class CronController {
+  public async sendNewsletters(req: Request, res: Response) {
+    try {
+      // ── Auth ──────────────────────────────────────────────────────────────
       const authHeader = req.headers.authorization
-      if (!authHeader || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      const expectedHeader = `Bearer ${process.env.CRON_SECRET}`
+      if (
+        !authHeader ||
+        !process.env.CRON_SECRET ||
+        authHeader.length !== expectedHeader.length ||
+        !timingSafeEqual(
+          Buffer.from(authHeader),
+          Buffer.from(expectedHeader)
+        )
+      ) {
         return ApiErrors.unauthorized(res)
       }
 
