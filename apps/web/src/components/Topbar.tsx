@@ -5,7 +5,11 @@ import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@workspace/ui/components/button"
-import { useCategories } from "@/modules/category/hooks/useCategories"
+import {
+  useCategories,
+  type CategoryItem,
+} from "@/modules/category/hooks/useCategories"
+import type { InfiniteData } from "@tanstack/react-query"
 
 import { signOut, getSession, type AuthSession } from "@/lib/auth-client"
 
@@ -72,7 +76,18 @@ export function Topbar() {
   const profileSrc = session?.user.image || profilePlaceholder
 
   const { data: categoryData } = useCategories("")
-  const categoryBarItems = categoryData?.pages?.[0]?.data.data.slice(0, 9) ?? []
+  const categoryBarItems =
+    (
+      categoryData as
+        | InfiniteData<{
+            success: true
+            data: { data: CategoryItem[] }
+            meta: { page: number }
+          }>
+        | undefined
+    )?.pages
+      .flatMap((page) => page.data.data)
+      .slice(0, 9) ?? []
 
   const handleLogout = async () => {
     try {
@@ -87,7 +102,7 @@ export function Topbar() {
 
   return (
     <>
-      <div className="sticky top-0 z-10 flex justify-between gap-3 px-4 py-3 backdrop-blur-md sm:px-6 lg:px-8">
+      <div className="sticky top-0 z-10 flex justify-between gap-3 px-4 py-3 backdrop-blur-sm sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
@@ -148,6 +163,14 @@ export function Topbar() {
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
               onFocus={() => setIsSearchOpen(true)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && searchTerm.trim()) {
+                  router.push(
+                    `/articles?q=${encodeURIComponent(searchTerm.trim())}`
+                  )
+                  setIsSearchOpen(false)
+                }
+              }}
               className="w-full bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-500 dark:text-slate-100 dark:placeholder:text-slate-500"
               placeholder="Search stories, people, topics..."
             />
@@ -249,13 +272,13 @@ export function Topbar() {
         </div>
       </div>
 
-      <div className="sticky top-[64px] z-9 flex justify-between border-t border-slate-200 bg-white/95 px-4 py-3 shadow-sm shadow-slate-900/5 backdrop-blur-sm sm:px-6 lg:px-8 dark:border-slate-800 dark:bg-slate-950/90">
+      <div className="sticky top-16 z-9 flex justify-between border-t border-slate-200 bg-white/95 px-4 py-3 shadow-sm shadow-slate-900/5 backdrop-blur-sm sm:px-6 lg:px-8 dark:border-slate-800 dark:bg-slate-950/90">
         <div className="max-w-9xl mx-auto flex flex-wrap gap-2 overflow-x-auto py-1">
           {categoryBarItems.length > 0 ? (
             categoryBarItems.map((item) => (
               <Link
                 key={item.id}
-                href={`/arcticles?category=${encodeURIComponent(item.slug)}`}
+                href={`/articles?category=${encodeURIComponent(item.slug)}`}
                 className="inline-flex rounded-full border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-primary/70 hover:bg-white dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
               >
                 {item.name}
@@ -334,7 +357,13 @@ export function Topbar() {
                       key={suggestion.label}
                       type="button"
                       className="w-full rounded-3xl border border-slate-200 p-4 text-left transition hover:border-primary/60 hover:bg-primary/5 dark:border-slate-800 dark:hover:bg-slate-800"
-                      onClick={() => setSearchTerm(suggestion.label)}
+                      onClick={() => {
+                        setSearchTerm(suggestion.label)
+                        router.push(
+                          `/articles?q=${encodeURIComponent(suggestion.label)}`
+                        )
+                        setIsSearchOpen(false)
+                      }}
                     >
                       <p className="font-medium text-slate-950 dark:text-white">
                         {suggestion.label}

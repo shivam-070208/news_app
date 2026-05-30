@@ -140,7 +140,7 @@ function CategoryExplorer() {
                 categories.map((category) => (
                   <Link
                     key={category.id}
-                    href={`/arcticles?category=${encodeURIComponent(category.slug)}`}
+                    href={`/articles?category=${encodeURIComponent(category.slug)}`}
                     onClick={() => handleCategoryClick(category)}
                     className="border border-slate-200 bg-white p-5 shadow-sm shadow-slate-900/5 transition hover:border-primary/70 hover:bg-primary/5"
                   >
@@ -187,7 +187,7 @@ function CategoryExplorer() {
                 {favorites.length > 0
                   ? favorites.map((favorite) => (
                       <Link
-                        href={`/arcticles?category=${encodeURIComponent(favorite.slug)}`}
+                        href={`/articles?category=${encodeURIComponent(favorite.slug)}`}
                         key={favorite.id}
                         className="border border-slate-200 bg-slate-50 text-sm text-slate-700"
                       >

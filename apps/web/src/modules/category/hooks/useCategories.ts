@@ -1,4 +1,8 @@
-import { useInfiniteQuery } from "@tanstack/react-query"
+import {
+  useInfiniteQuery,
+  type InfiniteData,
+  type UseInfiniteQueryResult,
+} from "@tanstack/react-query"
 import { axiosClient } from "@/lib/axios-client"
 
 export type CategoryItem = {
@@ -46,7 +50,9 @@ async function fetchCategoryPage(
   return data
 }
 
-export function useCategories(search?: string) {
+export function useCategories(
+  search?: string
+): UseInfiniteQueryResult<CategoryApiResponse, Error> {
   return useInfiniteQuery<
     CategoryApiResponse,
     Error,

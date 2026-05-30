@@ -3,13 +3,6 @@ import type { NextRequest } from "next/server"
 
 const PUBLIC_PATHS = ["/login", "/signup", "/verify-email"]
 
-function isPublicPath(pathname: string) {
-  return PUBLIC_PATHS.some(
-    (publicPath) =>
-      pathname === publicPath || pathname.startsWith(publicPath + "/")
-  )
-}
-
 async function getSession(request: NextRequest) {
   try {
     const url = new URL("/api/session", request.nextUrl.origin)
@@ -31,12 +24,7 @@ async function getSession(request: NextRequest) {
   }
 }
 
-export async function proxy(request: NextRequest) {
-  const pathname = request.nextUrl.pathname
-  if (isPublicPath(pathname)) {
-    return NextResponse.next()
-  }
-
+async function proxy(request: NextRequest) {
   const session = await getSession(request)
   if (!session?.user) {
     return NextResponse.redirect(new URL("/login", request.url))
@@ -48,6 +36,7 @@ export async function proxy(request: NextRequest) {
 
   return NextResponse.next()
 }
+export default proxy
 
 export const config = {
   matcher: ["/dashboard", "/dashboard/(.*)"],

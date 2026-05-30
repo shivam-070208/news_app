@@ -20,6 +20,7 @@ model User {
   role               Role                @default(READER)
   preferences        UserPreference?
   comments           Comment[]
+  articles           Article[]
   emailVerified      Boolean             @default(false)
   image              String?
   createdAt          DateTime            @default(now())
@@ -121,6 +122,7 @@ model Article {
   fullContent       String        @db.Text
   thumbnailUrl      String?
   authorId          String
+  author            User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
   categoryId        String
   category          Category      @relation(fields: [categoryId], references: [id])
   tags              ArticleTag[]

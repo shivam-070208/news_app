@@ -36,7 +36,7 @@ async function getSession(request: NextRequest) {
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   if (isPublicPath(pathname)) {
     return NextResponse.next()
