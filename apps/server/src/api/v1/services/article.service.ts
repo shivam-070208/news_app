@@ -292,7 +292,6 @@ export async function getHomepageSections(
       getPersonalizedArticles(userId, 1, limit),
       getNextCategorySlug(),
     ])
-  console.log(forYouResult)
   return {
     trending: trendingResult.articles,
     latest: latestResult.articles,

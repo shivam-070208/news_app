@@ -1,4 +1,4 @@
-import "dotenv/config"
+import "./env"
 import express from "express"
 import cors from "cors"
 import morgan from "morgan"
@@ -12,6 +12,9 @@ import { homeV1Router } from "@v1/routes/home.routes"
 import { db } from "@workspace/db"
 import "@/jobs/category-click"
 import "@/jobs/article-view"
+import { preferencesV1Router } from "@v1/routes/preferences.route"
+import { tagsV1Router } from "@v1/routes/tags.route"
+import { cronV1Router } from "@v1/routes/cron.route"
 
 // Variable declaration
 const app = express()
@@ -172,12 +175,15 @@ app.get("/api/v1/seed-dummy-data", async (req, res) => {
     },
   })
 })
+app.use("/api/v1/tags", tagsV1Router)
+app.use("/api/v1/preferences", preferencesV1Router)
+app.use("/api/v1/cron", cronV1Router)
 
 // Auth handler
 app.all("/api/auth/{*any}", toNodeHandler(auth))
 
 app.get("/", (_, res) => {
-  res.send("Hello World")
+  res.send("News Server is running")
 })
 
 app.listen(PORT, () => {

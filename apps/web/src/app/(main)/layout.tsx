@@ -1,5 +1,5 @@
 import { Footer } from "@/components/footer"
-import { TopBar } from "@/components/TopBar"
+import { Topbar } from "@/components/Topbar"
 
 export default function MainLayout({
   children,

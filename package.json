@@ -22,6 +22,7 @@
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "tsx": "^4.19.2",
     "turbo": "^2.8.17",
     "typescript": "5.9.3"
   },
@@ -37,5 +38,8 @@
   "packageManager": "pnpm@9.15.9",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
   }
 }

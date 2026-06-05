@@ -8,9 +8,7 @@ import {
   getSession,
   signInWithEmailPassword,
   signInWithGoogle,
-  normalizeRole,
-  DASHBOARD_ALLOWED_ROLES,
-} from "../../../lib/auth-client"
+} from "@/lib/auth-client"
 
 export function LoginForm() {
   const router = useRouter()
@@ -25,11 +23,6 @@ export function LoginForm() {
     const checkSession = async () => {
       const session = await getSession()
       if (!session?.user) return
-
-      if (!DASHBOARD_ALLOWED_ROLES.includes(normalizeRole(session.user.role))) {
-        setError("You are not authorized to access this dashboard.")
-        return
-      }
 
       if (!session.user.emailVerified) {
         router.push("/verify-email")

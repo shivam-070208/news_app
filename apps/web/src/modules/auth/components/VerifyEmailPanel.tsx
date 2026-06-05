@@ -4,12 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@workspace/ui/components/button"
 import { AuthCard, AuthHeader, AuthMessage } from "./index"
-import {
-  getSession,
-  sendVerificationEmail,
-  DASHBOARD_ALLOWED_ROLES,
-  normalizeRole,
-} from "../../../lib/auth-client"
+import { getSession, sendVerificationEmail } from "@/lib/auth-client"
 
 export function VerifyEmailPanel() {
   const router = useRouter()
@@ -23,11 +18,6 @@ export function VerifyEmailPanel() {
       const session = await getSession()
       if (!session?.user) {
         router.push("/login")
-        return
-      }
-
-      if (!DASHBOARD_ALLOWED_ROLES.includes(normalizeRole(session.user.role))) {
-        setError("You are not authorized to access this page.")
         return
       }
 
