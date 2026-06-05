@@ -1,9 +1,8 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono, Inter } from "next/font/google"
 import { ReactQueryProvider } from "@/components/providers/react-query-provider"
-import { Topbar } from "@/components/Topbar"
+
 import "./globals.css"
-import { Footer } from "@/components/footer"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,13 +36,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="max-w-9xl min-h-full bg-slate-50 pt-4 text-slate-950 dark:bg-slate-950 dark:text-white">
-        <ReactQueryProvider>
-          <div className="mx-auto flex flex-col gap-6">
-            <Topbar />
-            {children}
-            <Footer />
-          </div>
-        </ReactQueryProvider>
+        <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>
   )

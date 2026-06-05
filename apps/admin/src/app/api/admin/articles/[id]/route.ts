@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
-import { requireAuth } from "@/src/lib/auth-server"
+import { requireAuth } from "@/lib/auth-server"
 import {
   getArticleById,
   updateArticle,
   deleteArticle,
   UpdateArticlePayload,
-} from "@/src/modules/articles/articles.service"
+} from "@/modules/articles/articles.service"
 
 type RouteContext = { params: Promise<{ id: string }> }
 

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { requireAuth } from "@/src/lib/auth-server"
+import { requireAuth } from "@/lib/auth-server"
 import {
   getArticles,
   createArticle,
   CreateArticlePayload,
-} from "@/src/modules/articles/articles.service"
+} from "@/modules/articles/articles.service"
 
 export async function GET(request: NextRequest) {
   const authCheck = await requireAuth(request)
