@@ -1,18 +1,21 @@
 import { Request, Response } from "express"
+
 import { sendSuccess, ApiErrors, buildMeta } from "@/lib/api-response"
 import {
   listCategories,
+  listPublicCategories,
   getCategoryById,
   createCategory,
   updateCategory,
   deleteCategory,
   getCategoryArticles,
-  reorderCategories,
+  getUserFavoriteCategories,
 } from "@/api/v1/services/category.service"
+import { categoryClickQueue } from "@/jobs/category-click"
+import type { RequestWithSession } from "@/types/request-with-session"
 import type {
   CreateCategoryInput,
   UpdateCategoryInput,
-  ReorderCategoriesInput,
 } from "@/repo/types/category"
 
 export class CategoryController {
@@ -28,6 +31,48 @@ export class CategoryController {
     })
 
     return sendSuccess(res, data, buildMeta(page, limit, total))
+  }
+
+  // GET /api/v1/categories/public
+  async listPublic(req: Request, res: Response) {
+    const { page, limit, search } = req.query as any
+    const session = (req as RequestWithSession).session
+    const userId = session?.user?.id
+
+    const [listResult, favorites] = await Promise.all([
+      listPublicCategories({ page, limit, search }),
+      userId ? getUserFavoriteCategories(userId, 5) : Promise.resolve([]),
+    ])
+
+    return sendSuccess(
+      res,
+      { ...listResult, favorites },
+      buildMeta(page, limit, listResult.total)
+    )
+  }
+
+  // POST /api/v1/categories/:id/click
+  async trackClick(req: Request, res: Response) {
+    const rawId = req.params.id
+    const id = Array.isArray(rawId) ? rawId[0] : rawId
+
+    if (!id) {
+      return ApiErrors.validation(res, "Category ID is required")
+    }
+
+    const category = await getCategoryById(id)
+    if (!category) return ApiErrors.notFound(res, "Category")
+    console.log(req.session)
+    void categoryClickQueue
+      .add("track", {
+        userId: (req as RequestWithSession).session.user.id,
+        categoryId: id,
+      })
+      .catch((error) => {
+        console.error("Failed to enqueue category click job:", error)
+      })
+
+    return sendSuccess(res, { queued: true })
   }
 
   // GET /api/v1/admin/categories/:id
@@ -142,20 +187,5 @@ export class CategoryController {
       },
       buildMeta(page, limit, total)
     )
-  }
-
-  // PATCH /api/v1/admin/categories/reorder
-  async reorder(req: Request, res: Response) {
-    const { orderedIds } = req.body as ReorderCategoriesInput
-    const result = await reorderCategories(orderedIds)
-
-    if (!result.success) {
-      return ApiErrors.validation(
-        res,
-        `Some category IDs were not found: ${result.missingIds.join(", ")}`
-      )
-    }
-
-    return sendSuccess(res, { reordered: true })
   }
 }

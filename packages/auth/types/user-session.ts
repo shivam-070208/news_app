@@ -1,3 +1,3 @@
-import { auth } from "../src/index"
+import { auth } from "../src/auth"
 
 export type UserSession = typeof auth.$Infer.Session

@@ -3,30 +3,25 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
-  reorderCategories,
   getCategoryArticles,
   listCategories,
 } from "./category.service"
 import { prismaMock } from "../../../__mocks__/db"
 
 describe("Category Service", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   describe("createCategory", () => {
     it("should successfully create a category with an auto-generated slug", async () => {
-      // Setup mock returns
-      prismaMock.category.findUnique.mockResolvedValue(null) // No slug conflict
-      prismaMock.category.aggregate.mockResolvedValue({
-        _max: { sortOrder: 0 },
-      } as any)
+      prismaMock.category.findUnique.mockResolvedValue(null)
 
       const mockCategory = {
         id: "cat_1",
         name: "Technology",
         slug: "technology",
-        description: null,
-        parentId: null,
-        sortOrder: 1,
         createdAt: new Date(),
-        updatedAt: new Date(),
       }
 
       prismaMock.category.create.mockResolvedValue(mockCategory)
@@ -38,9 +33,6 @@ describe("Category Service", () => {
         data: {
           name: "Technology",
           slug: "technology",
-          description: null,
-          parentId: null,
-          sortOrder: 1,
         },
       })
     })
@@ -55,20 +47,6 @@ describe("Category Service", () => {
 
       expect(result).toEqual({ success: false, error: "SLUG_CONFLICT" })
       expect(prismaMock.category.create).not.toHaveBeenCalled()
-    })
-
-    it("should fail when parent category does not exist", async () => {
-      // First findUnique checks slug (null), second checks parent (null)
-      prismaMock.category.findUnique
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(null)
-
-      const result = await createCategory({
-        name: "Sub Tech",
-        parentId: "non_existent",
-      })
-
-      expect(result).toEqual({ success: false, error: "PARENT_NOT_FOUND" })
     })
   })
 
@@ -89,28 +67,13 @@ describe("Category Service", () => {
       })
     })
 
-    it("should detect circular parent references", async () => {
-      const existing = { id: "cat_1", slug: "tech" }
+    it("should fail when category is not found", async () => {
+      prismaMock.category.findUnique.mockResolvedValue(null)
 
-      // existing check
-      prismaMock.category.findUnique.mockResolvedValue(existing as any)
+      const result = await updateCategory("cat_1", { name: "New Tech" })
 
-      // If parentId === id it fails immediately, let's test where it's an ancestor
-      // getAncestorIds will loop via findUnique
-      // So input.parentId = "cat_2"
-      // cat_2 has parentId = "cat_1" -> CIRCULAR!
-      prismaMock.category.findUnique.mockImplementation(
-        async (args: { where: { id: string } }) => {
-          if (args.where.id === "cat_1") return existing as any // update category check
-          if (args.where.id === "cat_2")
-            return { id: "cat_2", parentId: "cat_1" } as any // getAncestorIds loop 1
-          return null as any
-        }
-      )
-
-      const result = await updateCategory("cat_1", { parentId: "cat_2" })
-
-      expect(result).toEqual({ success: false, error: "CIRCULAR_PARENT" })
+      expect(result).toEqual({ success: false, error: "NOT_FOUND" })
+      expect(prismaMock.category.update).not.toHaveBeenCalled()
     })
   })
 
@@ -142,13 +105,10 @@ describe("Category Service", () => {
     })
 
     it("should reassign articles and delete category", async () => {
-      // 1. category to delete
       prismaMock.category.findUnique.mockResolvedValueOnce({
         id: "cat_1",
         _count: { articles: 5 },
       } as any)
-
-      // 2. target category for reassignment
       prismaMock.category.findUnique.mockResolvedValueOnce({
         id: "cat_2",
       } as any)
@@ -159,29 +119,6 @@ describe("Category Service", () => {
 
       expect(result).toEqual({ success: true })
       expect(prismaMock.$transaction).toHaveBeenCalled()
-    })
-  })
-
-  describe("reorderCategories", () => {
-    it("should reorder successfully when all IDs exist", async () => {
-      prismaMock.category.findMany.mockResolvedValue([
-        { id: "c1" },
-        { id: "c2" },
-      ] as any)
-      prismaMock.$transaction.mockResolvedValueOnce([] as any)
-
-      const result = await reorderCategories(["c1", "c2"])
-
-      expect(result).toEqual({ success: true })
-    })
-
-    it("should fail and return missing IDs if not all exist", async () => {
-      prismaMock.category.findMany.mockResolvedValue([{ id: "c1" }] as any)
-
-      const result = await reorderCategories(["c1", "c2"])
-
-      expect(result).toEqual({ success: false, missingIds: ["c2"] })
-      expect(prismaMock.$transaction).not.toHaveBeenCalled()
     })
   })
 })

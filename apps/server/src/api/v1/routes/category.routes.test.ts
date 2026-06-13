@@ -34,7 +34,14 @@ describe("Category Routes", () => {
 
   describe("GET /api/v1/categories", () => {
     it("should return a list of categories (public)", async () => {
-      const mockCats = [{ id: "c1", name: "Tech", sortOrder: 0 }]
+      const mockCats = [
+        {
+          id: "c1",
+          name: "Tech",
+          slug: "tech",
+          createdAt: new Date().toISOString(),
+        },
+      ]
       prismaMock.category.findMany.mockResolvedValue(mockCats as any)
       prismaMock.category.count.mockResolvedValue(1)
 
@@ -72,7 +79,7 @@ describe("Category Routes", () => {
       const res = await request(app)
         .post("/api/v1/categories")
         .set("x-mock-role", "ADMIN")
-        .send({ name: "Tech", description: "All about tech" })
+        .send({ name: "Tech" })
 
       expect(res.status).toBe(201)
       expect(res.body.success).toBe(true)
@@ -132,38 +139,6 @@ describe("Category Routes", () => {
 
       expect(res.status).toBe(403)
       expect(res.body.error.code).toBe("FORBIDDEN")
-    })
-  })
-
-  describe("PATCH /api/v1/categories/reorder", () => {
-    it("should successfully reorder categories", async () => {
-      const mockOrderedIds = [
-        "ckx72o3wq000001l4d1u2c3a4",
-        "ckx72o3wq000001l4d1u2c3a5",
-      ]
-      prismaMock.category.findMany.mockResolvedValue([
-        { id: mockOrderedIds[0] },
-        { id: mockOrderedIds[1] },
-      ] as any)
-      prismaMock.$transaction.mockResolvedValue([] as any)
-
-      const res = await request(app)
-        .patch("/api/v1/categories/reorder")
-        .set("x-mock-role", "ADMIN")
-        .send({ orderedIds: mockOrderedIds })
-
-      expect(res.status).toBe(200)
-      expect(res.body.success).toBe(true)
-    })
-
-    it("should throw validation error if orderedIds is missing", async () => {
-      const res = await request(app)
-        .patch("/api/v1/categories/reorder")
-        .set("x-mock-role", "ADMIN")
-        .send({})
-
-      expect(res.status).toBe(400)
-      expect(res.body.error.code).toBe("VALIDATION_ERROR")
     })
   })
 })

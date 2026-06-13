@@ -23,7 +23,7 @@ export const sendNewsEmail = async (to: string, articles: ArticlePreview[]) => {
   const subject = "Your Personalized News Update"
 
   if (articles.length === 0) {
-    return true  // No emails to send is not a failure
+    return true // No emails to send is not a failure
   }
 
   let textBody =

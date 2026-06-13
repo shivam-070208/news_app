@@ -11,12 +11,6 @@ export const createCategorySchema = z.object({
       "Slug must be lowercase letters, numbers, and hyphens only"
     )
     .optional(),
-  description: z
-    .string()
-    .max(500, "Description too long")
-    .nullable()
-    .optional(),
-  parentId: z.string().cuid("Invalid parent ID").nullable().optional(),
 })
 
 export const updateCategorySchema = z.object({
@@ -32,18 +26,6 @@ export const updateCategorySchema = z.object({
       "Slug must be lowercase letters, numbers, and hyphens only"
     )
     .optional(),
-  description: z
-    .string()
-    .max(500, "Description too long")
-    .nullable()
-    .optional(),
-  parentId: z.string().cuid("Invalid parent ID").nullable().optional(),
-})
-
-export const reorderCategoriesSchema = z.object({
-  orderedIds: z
-    .array(z.string().cuid("Invalid category ID"))
-    .min(1, "At least one ID required"),
 })
 
 export const listCategoriesQuerySchema = z.object({
@@ -52,7 +34,8 @@ export const listCategoriesQuerySchema = z.object({
   search: z.string().optional(),
   includeArticleCount: z.preprocess((value) => {
     if (value === "true" || value === true) return true
-    if (value === "false" || value === false || value === undefined) return false
+    if (value === "false" || value === false || value === undefined)
+      return false
     return value
   }, z.boolean()),
 })
@@ -69,4 +52,3 @@ export const deleteCategoryQuerySchema = z.object({
 
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>
 export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>
-export type ReorderCategoriesInput = z.infer<typeof reorderCategoriesSchema>

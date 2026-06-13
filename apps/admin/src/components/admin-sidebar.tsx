@@ -49,6 +49,16 @@ const PlusCircleIcon = () => (
 
 const navItems: NavItem[] = [
   {
+    label: "Editors",
+    href: "/editors",
+    icon: <NewspaperIcon />,
+  },
+  {
+    label: "Categories",
+    href: "/categories",
+    icon: <NewspaperIcon />,
+  },
+  {
     label: "News Management",
     href: "/news",
     icon: <NewspaperIcon />,
@@ -110,7 +120,8 @@ export default function AdminSidebar() {
         {navItems.map((item) => {
           const safePathname = pathname || ""
           const isActive =
-            safePathname === item.href || safePathname.startsWith(item.href + "/")
+            safePathname === item.href ||
+            safePathname.startsWith(item.href + "/")
 
           return (
             <Link

@@ -1,11 +1,9 @@
-import React from "react"
-import type { Metadata } from "next"
 import "./globals.css"
-import AdminSidebar from "@/src/components/admin-sidebar"
+import React from "react"
 
-export const metadata: Metadata = {
-  title: "News Admin",
-  description: "News management portal",
+export const metadata = {
+  title: "Admin Dashboard",
+  description: "Admin panel for managing the news app",
 }
 
 export default function RootLayout({
@@ -15,12 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <div className="flex min-h-screen">
-          <AdminSidebar />
-          <main className="flex-1 p-6">{children}</main>
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

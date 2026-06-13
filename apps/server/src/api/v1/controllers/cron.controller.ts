@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { db, EmailFrequency } from "@workspace/db"
 import { sendNewsEmail, type ArticlePreview } from "@workspace/email"
+import { timingSafeEqual } from "crypto"
 import { ApiErrors, sendSuccess } from "@/lib/api-response"
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -28,25 +29,6 @@ function hoursAgo(hours: number): Date {
 // ─── Controller ──────────────────────────────────────────────────────────────
 
 export class CronController {
-  /**
-   * POST /api/v1/cron/send-newsletters?frequency=DAILY|WEEKLY
-   *
-   * Secured by a Bearer token matching CRON_SECRET env var.
-   * Should be triggered externally by a cron scheduler (Vercel Cron, GitHub Actions, etc.)
-   *
-   * Strategy:
-   *  1. Only targets users matching the requested `frequency`.
-   *  2. Filters articles published within the relevant time window (24h for DAILY, 7d for WEEKLY).
-   *  3. Batches DB article queries by unique category sets (eliminates N+1).
-   *  4. Dispatches emails concurrently in chunks (avoids sequential bottleneck).
-   *  5. Falls back to top-5 global news if a user has no categories selected.
-   */
-  public async sendNewsletters(req: Request, res: Response) {
-    try {
-      // ── Auth ──────────────────────────────────────────────────────────────
-import { timingSafeEqual } from "crypto"
-
-export class CronController {
   public async sendNewsletters(req: Request, res: Response) {
     try {
       // ── Auth ──────────────────────────────────────────────────────────────
@@ -56,10 +38,7 @@ export class CronController {
         !authHeader ||
         !process.env.CRON_SECRET ||
         authHeader.length !== expectedHeader.length ||
-        !timingSafeEqual(
-          Buffer.from(authHeader),
-          Buffer.from(expectedHeader)
-        )
+        !timingSafeEqual(Buffer.from(authHeader), Buffer.from(expectedHeader))
       ) {
         return ApiErrors.unauthorized(res)
       }

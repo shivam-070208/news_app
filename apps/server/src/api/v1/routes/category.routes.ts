@@ -2,13 +2,13 @@ import { Router } from "express"
 import { CategoryController } from "@v1/controllers/category.controller"
 import { validate } from "@/api/v1/middelwares/validate"
 import {
-  requireAdmin,
-  requireAdminOnly,
-} from "@/api/v1/middelwares/auth.middleware"
+  authorizeUser,
+  authorizeAdmin,
+  attachOptionalSession,
+} from "@v1/middelwares/auth.middelware"
 import {
   createCategorySchema,
   updateCategorySchema,
-  reorderCategoriesSchema,
   listCategoriesQuerySchema,
   listArticlesQuerySchema,
   deleteCategoryQuerySchema,
@@ -20,6 +20,17 @@ const categoryController = new CategoryController()
 // ─── Public routes (no auth needed) ──────────────────────────────────────────
 // Readers need to browse categories on the client site
 
+// GET /api/v1/categories/public — public list for web with optional favorites for logged-in users
+router.get(
+  "/public",
+  attachOptionalSession,
+  validate("query", listCategoriesQuerySchema),
+  categoryController.listPublic
+)
+
+// GET /api/v1/categories/:id/click — track user category clicks asynchronously
+router.post("/:id/click", authorizeUser, categoryController.trackClick)
+
 // GET /api/v1/categories  — public list (no article count by default)
 router.get(
   "/",
@@ -29,18 +40,11 @@ router.get(
 
 // ─── Admin routes ─────────────────────────────────────────────────────────────
 
-// PATCH /api/v1/categories/reorder  — must be before /:id to avoid param conflict
-router.patch(
-  "/reorder",
-  requireAdmin,
-  validate("body", reorderCategoriesSchema),
-  categoryController.reorder
-)
-
 // GET /api/v1/categories/:id/articles
 router.get(
   "/:id/articles",
-  requireAdmin,
+  authorizeUser,
+  authorizeAdmin,
   validate("query", listArticlesQuerySchema),
   categoryController.getArticles
 )
@@ -48,7 +52,8 @@ router.get(
 // POST /api/v1/categories
 router.post(
   "/",
-  requireAdmin,
+  authorizeUser,
+  authorizeAdmin,
   validate("body", createCategorySchema),
   categoryController.create
 )
@@ -56,7 +61,8 @@ router.post(
 // PUT /api/v1/categories/:id
 router.put(
   "/:id",
-  requireAdmin,
+  authorizeUser,
+  authorizeAdmin,
   validate("body", updateCategorySchema),
   categoryController.update
 )
@@ -64,7 +70,8 @@ router.put(
 // DELETE /api/v1/categories/:id  — ADMIN only (not EDITOR)
 router.delete(
   "/:id",
-  requireAdminOnly,
+  authorizeUser,
+  authorizeAdmin,
   validate("query", deleteCategoryQuerySchema),
   categoryController.remove
 )
